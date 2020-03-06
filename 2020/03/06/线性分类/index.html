@@ -86,7 +86,7 @@
 <meta property="og:site_name" content="Holmes&#39;s blog">
 <meta property="og:description" content="线性分类 ​ 对于分类任务，线性回归模型就无能为力了，但是我们可以在线性模型的函数进行后再加入一层激活函数，这个函数是非线性的，激活函数的反函数叫做链接(Link)函数。我们有两种线性分类的方式：  硬分类，我们直接需要输出观测对应的分类。这类模型的代表为：  线性判别分析（Fisher 判别） 感知机  软分类，产生不同类别的概率，这类算法根据获得后验概率方法的不同分为两种">
 <meta property="article:published_time" content="2020-03-06T11:28:24.000Z">
-<meta property="article:modified_time" content="2020-03-06T11:50:19.896Z">
+<meta property="article:modified_time" content="2020-03-06T11:52:51.139Z">
 <meta property="article:author" content="Holmes">
 <meta name="twitter:card" content="summary">
 
@@ -423,7 +423,7 @@ a=w^Tx
 p(y|x)=p_1^yp_0^{1-y}
 \]</span></p>
 <p>其中 ，</p>
-<p><span class="math inline">\({p_1} = P\left( {y = 1|x} \right) = Sigmoid\left( { {w^T}x} \right) = \frac{1}{ {1 + {e^{ - {w^T}x}}}}\)</span> , <span class="math inline">\({p_0} = P\left( {y = 0|x} \right) = 1 - P(y = 1|x) = 1 - \frac{1}{ {1 + {e^{ - {w^T}x}}}}\)</span> 。</p>
+<p><span class="math display">\[{p_1} = P\left( {y = 1|x} \right) = Sigmoid\left( { {w^T}x} \right) = \frac{1}{ {1 + {e^{ - {w^T}x}}}} , {p_0} = P\left( {y = 0|x} \right) = 1 - P(y = 1|x) = 1 - \frac{1}{ {1 + {e^{ - {w^T}x}}}}\]</span>。</p>
 <p>那么对于 <span class="math inline">\(N\)</span> 次独立同分布的观测 log-MLE为： <span class="math display">\[
 \begin{align*}
 \hat{w}=\mathop{argmax}_wJ(w)&amp;=\mathop{argmax}_w \log P\left( {Y|X} \right)   \\
@@ -569,8 +569,8 @@ p(y|x)=\frac{p(x|y)p(y)}{p(x)}=\frac{\prod\limits_{i=1}^pp(x_i|y)p(y)}{p(x)}
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/03/06/hello-world/" rel="next" title="Hello World">
-                <i class="fa fa-chevron-left"></i> Hello World
+              <a href="/2020/03/05/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/" rel="next" title="线性回归">
+                <i class="fa fa-chevron-left"></i> 线性回归
               </a>
             
           </div>
@@ -654,7 +654,7 @@ p(y|x)=\frac{p(x|y)p(y)}{p(x)}=\frac{\prod\limits_{i=1}^pp(x_i|y)p(y)}{p(x)}
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

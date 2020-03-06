@@ -116,7 +116,7 @@ a=w^Tx
 p(y|x)=p_1^yp_0^{1-y}
 \]</span></p>
 <p>其中 ，</p>
-<p><span class="math inline">\({p_1} = P\left( {y = 1|x} \right) = Sigmoid\left( { {w^T}x} \right) = \frac{1}{ {1 + {e^{ - {w^T}x}}}}\)</span> , <span class="math inline">\({p_0} = P\left( {y = 0|x} \right) = 1 - P(y = 1|x) = 1 - \frac{1}{ {1 + {e^{ - {w^T}x}}}}\)</span> 。</p>
+<p><span class="math display">\[{p_1} = P\left( {y = 1|x} \right) = Sigmoid\left( { {w^T}x} \right) = \frac{1}{ {1 + {e^{ - {w^T}x}}}} , {p_0} = P\left( {y = 0|x} \right) = 1 - P(y = 1|x) = 1 - \frac{1}{ {1 + {e^{ - {w^T}x}}}}\]</span>。</p>
 <p>那么对于 <span class="math inline">\(N\)</span> 次独立同分布的观测 log-MLE为： <span class="math display">\[
 \begin{align*}
 \hat{w}=\mathop{argmax}_wJ(w)&amp;=\mathop{argmax}_w \log P\left( {Y|X} \right)   \\
@@ -242,25 +242,6 @@ p(y|x)=\frac{p(x|y)p(y)}{p(x)}=\frac{\prod\limits_{i=1}^pp(x_i|y)p(y)}{p(x)}
       <categories>
         <category>Machine Learning</category>
       </categories>
-  </entry>
-  <entry>
-    <title>Hello World</title>
-    <url>/2020/03/06/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="quick-start">Quick Start</h2>
-<h3 id="create-a-new-post">Create a new post</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="run-server">Run server</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="generate-static-files">Generate static files</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="deploy-to-remote-sites">Deploy to remote sites</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-]]></content>
   </entry>
   <entry>
     <title>线性回归</title>
