@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>线性分类</title>
+    <url>/2020/03/06/%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB/</url>
+    <content><![CDATA[<h1 id="线性分类">线性分类</h1>
+<p>​ 对于分类任务，线性回归模型就无能为力了，但是我们可以在线性模型的函数进行后再加入一层激活函数，这个函数是非线性的，激活函数的反函数叫做链接(Link)函数。我们有两种线性分类的方式：</p>
+<ol type="1">
+<li>硬分类，我们直接需要输出观测对应的分类。这类模型的代表为：
+<ul>
+<li><p>线性判别分析（Fisher 判别）</p></li>
+<li><p>感知机</p></li>
+</ul></li>
+<li>软分类，产生不同类别的概率，这类算法根据获得后验概率方法的不同分为两种
+<ul>
+<li><p>生成式（先对联合概率分布<span class="math inline">\(P\left( {x,c} \right)\)</span> 建模，然后再由此获得<span class="math inline">\(P\left( {c|x} \right)\)</span>）：高斯判别分析（GDA）和朴素贝叶斯等为代表</p>
+<ul>
+<li><p>GDA</p></li>
+<li><p>Naive Bayes</p></li>
+</ul></li>
+<li><p>判别式（直接对条件概率<span class="math inline">\(P\left( {c|x} \right)\)</span> 进行建模来预测<span class="math inline">\(c\)</span> ）：Logistic 回归</p></li>
+</ul></li>
+</ol>
+<h2 id="硬分类-感知机">硬分类-感知机</h2>
+<p>​ 假设输入空间<span class="math inline">\(\mathcal{X} \subseteq \mathbb{R}^{p}\)</span>，输出空间<span class="math inline">\(\mathcal{Y} = \left\{+1, -1 \right\}\)</span>。输入<span class="math inline">\(x \in \mathcal{X}\)</span>表示实例的特征向量，对应于输入空间的点；输出<span class="math inline">\(y \in \mathcal{Y}\)</span>表示实例的类别。由输入空间到输出空间的函数 <span class="math display">\[
+f \left( x \right) = sign \left( w \cdot x \right)
+\]</span> 称为感知机。其中，<span class="math inline">\(w\)</span>和<span class="math inline">\(b\)</span>为感知机模型参数，<span class="math inline">\(w \in \mathbb{R}^{p}\)</span>叫做权值或权值向量，<span class="math inline">\(w \cdot x\)</span>表示<span class="math inline">\(w\)</span>和<span class="math inline">\(x\)</span>的内积。<span class="math inline">\(sign\)</span>是符号函数，即 <span class="math display">\[
+sign \left( x \right) = \left\{
+\begin{aligned} 
+\ &amp;  +1, x \geq 0
+\\ &amp; -1, x&lt;0
+\end{aligned}
+\right.
+\]</span></p>
+<p>​ 感知机是一种线性分类模型，属于<strong>判别模型</strong>。感知机模型的假设空间是定义在特征空间中的所有线性分类模型或线性分类器，即函数集合<span class="math inline">\(\left\{ f | f \left( x \right) = w \cdot x \right\}\)</span>。</p>
+<p>​ 感知机学习的目标是求得一个能够将训练集正实例点和负实例点完全正确分开的分离超平面。为了找出这样的超平面，即确定感知机模型参数<span class="math inline">\(w\)</span>，需要确定一个学习策略，即定义损失函数并将损失函数极小化。</p>
+<p>​ 损失函数的一个自然选择是误分类点的总数。但是，这样的损失函数不是参数<span class="math inline">\(w\)</span> 的连续可导函数，不易优化。损失函数的另一个选择是误分类点到超平面<span class="math inline">\(S\)</span> 的总距离，这是感知机所采用的。输入空间<span class="math inline">\(R^{n}\)</span>中的任一点<span class="math inline">\(x_{0}\)</span>到超平面<span class="math inline">\(S\)</span>的距离：</p>
+<p><span class="math display">\[
+\dfrac{1}{\| w \|} \left| {w^T}  x_{0} \right|
+\]</span> 其中<span class="math inline">\(\| w \|\)</span>是<span class="math inline">\(w\)</span>的<span class="math inline">\(L_{2}\)</span>范数。</p>
+<p>​ 对于误分类数据<span class="math inline">\(\left( x_{i}, y_{i} \right)\)</span>，当<span class="math inline">\({w^T}x &gt; 0\)</span>时，<span class="math inline">\(y_{i}=-1\)</span>，当<span class="math inline">\({w^T} x &lt; 0\)</span>时，<span class="math inline">\(y_{i}=+1\)</span>，有 <span class="math display">\[
+-y_{i} \left( {w^T}x_{i} \right) &gt; 0
+\]</span> 误分类点<span class="math inline">\(x_{i}\)</span>到分离超平面的距离: <span class="math display">\[
+-\dfrac{1}{\| w \|} y_{i}\left({w^T} x_{i} \right)
+\]</span></p>
+<p>假设超平面<span class="math inline">\(S\)</span>的误分类点集合为<span class="math inline">\(M\)</span>，则所有误分类点到超平面<span class="math inline">\(S\)</span> 的总距离： <span class="math display">\[
+-\dfrac{1}{\| w \|} \sum_{x_{i} \in M} y_{i} \left({w^T}x_{i}\right)
+\]</span> 不考虑<span class="math inline">\(\dfrac{1}{\| w \|}\)</span> ，就得到感知机学习的损失函数： <span class="math display">\[
+L(w)=\sum\limits_{ {x_{i} \in M}}-y_iw^Tx_i
+\]</span> 其中<span class="math inline">\(M\)</span> 为误分类点集合。</p>
+<p>​ 显然，损失函数<span class="math inline">\(L(w)\)</span> 是非负的。如果没有误分类点，损失函数值是0。而且，误分类点越少，误分类点离超平面越近，损失函数值就越小。实际在每一次训练的时候，我们采用梯度下降的算法。损失函数对 <span class="math inline">\(w\)</span> 的偏导为： <span class="math display">\[
+\frac{\partial}{\partial w}L(w)=\sum\limits_{x_i\in\mathcal{D}_{wrong}}-y_ix_i
+\]</span> 但是如果样本非常多的情况下，计算复杂度较高，但是，实际上我们并不需要绝对的损失函数下降的方向，我们只需要损失函数的期望值下降，但是计算期望需要知道真实的概率分布，我们实际只能根据训练数据抽样来估算这个概率分布即经验风险（关于训练集的平均损失）： <span class="math display">\[
+\mathbb{E}_{\mathcal D}[\mathbb{E}_\hat{p}[\nabla_wL(w)]]=\mathbb{E}_{\mathcal D}[\frac{1}{N}\sum\limits_{i=1}^N\nabla_wL(w)]
+\]</span> 我们知道， <span class="math inline">\(N\)</span> 越大，样本近似真实分布越准确，但是对于一个标准差为 <span class="math inline">\(\sigma\)</span> 的数据，可以确定的标准差仅和 <span class="math inline">\(\sqrt{N}\)</span> 成反比，而计算速度却和 <span class="math inline">\(N\)</span> 成正比。因此可以每次使用较少样本，则在数学期望的意义上损失降低的同时，有可以提高计算速度，如果每次只使用一个错误样本，我们有下面的更新策略（根据泰勒公式，在负方向）： <span class="math display">\[
+w^{t+1}\leftarrow w^{t}+\lambda y_ix_i
+\]</span> 是可以收敛的，同时使用单个观测更新也可以在一定程度上增加不确定度，从而减轻陷入局部最小的可能。在更大规模的数据上，常用的是小批量随机梯度下降法。</p>
+<h2 id="硬分类-线性判别分析">硬分类-线性判别分析</h2>
+<p>​ 在 线性判别分析(LDA) 中，我们的基本想法是选定一个方向，将试验样本顺着这个方向投影，投影后的数据需要满足两个条件，从而可以更好地分类：</p>
+<ol type="1">
+<li>相同类内部的试验样本距离接近。</li>
+<li>不同类别之间的距离较大。</li>
+</ol>
+<p>首先是投影，我们假定原来的数据是向量 <span class="math inline">\(x\)</span>，那么顺着 $ w$ 方向的投影就是标量： <span class="math display">\[
+z=w^T\cdot x(=|w|\cdot|x|\cos\theta)
+\]</span> 对第一点，相同类内部的样本更为接近，我们假设属于两类的试验样本数量分别是 <span class="math inline">\(N_1\)</span>和 <span class="math inline">\(N_2\)</span>，那么我们采用方差矩阵来表征每一个类内的总体分布，这里我们使用了方差的定义，用 <span class="math inline">\(S\)</span> 表示原数据的方差： <span class="math display">\[
+\begin{align}
+C_1:Var_z[C_1]&amp;=\frac{1}{N_1}\sum\limits_{i=1}^{N_1}(z_i-\overline{z_{c1}})(z_i-\overline{z_{c1}})^T\nonumber\\
+&amp;=\frac{1}{N_1}\sum\limits_{i=1}^{N_1}(w^Tx_i-\frac{1}{N_1}\sum\limits_{j=1}^{N_1}w^Tx_j)(w^Tx_i-\frac{1}{N_1}\sum\limits_{j=1}^{N_1}w^Tx_j)^T\nonumber\\
+&amp;=\frac{1}{N_{1}} \sum_{i=1}^{N_{1}} w^{T}\left(x_{i}-\frac{1}{N_{1}} \sum_{j=1}^{N_{1}} x_{j}\right)\left(x_{i}-\frac{1}{N_{1}} \sum_{j=1}^{N_{1}} x_{j}\right)^{T}({w^T})^{T}\nonumber\\
+&amp;=w^T\frac{1}{N_1}\sum\limits_{i=1}^{N_1}(x_i-\overline{x_{c1}})(x_i-\overline{x_{c1}})^Tw\nonumber\\
+&amp;=w^TS_{c1}w\\
+C_2:Var_z[C_2]&amp;=\frac{1}{N_2}\sum\limits_{i=1}^{N_2}(z_i-\overline{z_{c2}})(z_i-\overline{z_{c2}})^T\nonumber\\
+&amp;=w^TS_{c2}w
+\end{align}
+\]</span> 所以类内距离可以记为： <span class="math display">\[
+\begin{align}
+Var_z[C_1]+Var_z[C_2]=w^T(S_1+S_2)w
+\end{align}
+\]</span> 对于第二点，我们可以用两类的均值表示这个距离： <span class="math display">\[
+\begin{align}
+(\overline{z_{c1}}-\overline{z_{c2}})^2&amp;=(\frac{1}{N_1}\sum\limits_{i=1}^{N_1}w^Tx_i-\frac{1}{N_2}\sum\limits_{i=1}^{N_2}w^Tx_i)^2\nonumber\\
+&amp;=(w^T(\overline{x_{c1}}-\overline{x_{c2}}))^2\nonumber\\
+&amp;=w^T(\overline{x_{c1}}-\overline{x_{c2}})(\overline{x_{c1}}-\overline{x_{c2}})^Tw
+\end{align}
+\]</span> 综合这两点，由于协方差是一个矩阵，于是我们用将这两个值相除来得到我们的损失函数，并最大化这个值： <span class="math display">\[
+\begin{align}
+\hat{w}=\mathop{argmax}\limits_wJ(w)&amp;=\mathop{argmax}\limits_w\frac{(\overline{z_{c1}}-\overline{z_{c2}})^2}{Var_z[C_1]+Var_z[C_2]}\nonumber\\
+&amp;=\mathop{argmax}\limits_w\frac{w^T(\overline{x_{c1}}-\overline{x_{c2}})(\overline{x_{c1}}-\overline{x_{c2}})^Tw}{w^T(S_{c1}+S_{c2})w}\nonumber\\
+&amp;=\mathop{argmax}\limits_w\frac{w^TS_bw}{w^TS_ww}
+\end{align}
+\]</span> 这样，我们就把损失函数和原数据集以及参数结合起来了。下面对这个损失函数求偏导： <span class="math display">\[
+\begin{align}
+\frac{\partial}{\partial w}J(w)&amp;=\frac{\partial}{\partial w}{w^T}{S_b}w{({w^T}{S_w}w)^{ - 1}} \nonumber\\
+&amp;=2S_bw(w^TS_ww)^{-1}-2w^TS_bw(w^TS_ww)^{-2}S_ww=0\nonumber\\
+&amp;\Longrightarrow S_bw(w^TS_ww)=(w^TS_bw)S_ww\nonumber\\
+\end{align}
+\]</span> 因为<span class="math inline">\(w:p*1\)</span>, <span class="math inline">\(S_w:p*p\)</span>, <span class="math inline">\(S_b:p*p\)</span> ，所以<span class="math inline">\({w^T}{S_b}w\)</span> 与<span class="math inline">\({w^T}{S_w}w\)</span> 是<span class="math inline">\(1*1\)</span>的scalar实数。并注意我们其实对 <span class="math inline">\(w\)</span> 的绝对值没有任何要求，只对方向有要求，所以： <span class="math display">\[
+\begin{align*}
+&amp;\Longrightarrow S_ww=\frac{w^TS_ww}{w^TS_bw}S_bw \\
+&amp;\Longrightarrow w=\frac{w^TS_ww}{w^TS_bw}S_w^{-1}S_bw \propto S_w^{-1}S_bw=S_w^{-1}(\overline{x_{c1}}-\overline{x_{c2}})(\overline{x_{c1}}-\overline{x_{c2}})^Tw\\
+\end{align*}
+\]</span> 又因为根据矩阵乘法结合律：<span class="math inline">\((\overline{x_{c1}}-\overline{x_{c2}})(\overline{x_{c1}}-\overline{x_{c2}})^Tw = (\overline{x_{c1}}-\overline{x_{c2}})((\overline{x_{c1}}-\overline{x_{c2}})^Tw)\)</span> ，而<span class="math inline">\((\overline{x_{c1}}-\overline{x_{c2}})^T\)</span> 的维度是<span class="math inline">\(1*p\)</span>，<span class="math inline">\(w\)</span> 的维度是<span class="math inline">\(p*1\)</span>，即<span class="math inline">\((\overline{x_{c1}}-\overline{x_{c2}})^Tw\)</span> 是一个scalar实数。所以： <span class="math display">\[
+w\propto S_w^{-1}(\overline{x_{c1}}-\overline{x_{c2}})
+\]</span> 于是 $ S_w^{-1}(-)$ 就是我们需要寻找的方向。最后可以归一化求得单位的 <span class="math inline">\(w\)</span> 值。</p>
+<h2 id="软分类-logistic-回归">软分类-Logistic 回归</h2>
+<p>Logistic回归是概率判别模型。有时候我们只要得到一个类别的概率，那么我们需要一种能输出 <span class="math inline">\([0,1]\)</span> 区间的值的函数。考虑两分类模型，我们利用判别模型，希望对 <span class="math inline">\(p(C|x)\)</span> 建模，利用贝叶斯定理： <span class="math display">\[
+p(C_1|x)=\frac{p(x|C_1)p(C_1)}{p(x|C_1)p(C_1)+p(x|C_2)p(C_2)}
+\]</span> 取 <span class="math inline">\(a=\ln\frac{p(x|C_1)p(C_1)}{p(x|C_2)p(C_2)}\)</span>，于是： <span class="math display">\[
+p(C_1|x)=\frac{1}{1+\exp(-a)}
+\]</span> 上面的式子叫Sigmoid 函数，其参数表示了两类联合概率比值的对数。在判别式中，不关心这个参数的具体值，模型假设直接对 <span class="math inline">\(a\)</span> 进行。</p>
+<p>Logistic 回归的模型假设是： <span class="math display">\[
+a=w^Tx
+\]</span> 于是，通过寻找 $  w$ 的最佳值可以得到在这个模型假设下的最佳模型。概率判别模型常用最大似然估计的方式来确定参数。</p>
+<p>对于一次观测，获得分类 <span class="math inline">\(y\)</span> 的概率为（假定<span class="math inline">\(C_1=1,C_2=0\)</span>）： <span class="math display">\[
+p(y|x)=p_1^yp_0^{1-y}
+\]</span></p>
+<p>其中 <span class="math inline">\({p_1} = P\left( {y = 1|x} \right) = Sigmoid\left( { {w^T}x} \right) = \frac{1}{ {1 + {e^{ - {w^T}x}}}}\)</span> ，<span class="math inline">\({p_0} = P\left( {y = 0|x} \right) = 1 - P(y = 1|x) = 1 - \frac{1}{ {1 + {e^{ - {w^T}x}}}}\)</span> 。</p>
+<p>那么对于 <span class="math inline">\(N\)</span> 次独立同分布的观测 log-MLE为： <span class="math display">\[
+\begin{align*}
+\hat{w}=\mathop{argmax}_wJ(w)&amp;=\mathop{argmax}_w \log P\left( {Y|X} \right)   \\
+&amp;=\mathop{argmax}_w \log \prod\limits_{i = 1}^N {P\left( { {y_i}|{x_i}} \right)} \\
+&amp;=\mathop{argmax}_w \sum\limits_{i = 1}^N {\log P\left( { {y_i}|{x_i}} \right)} \\
+&amp;=\mathop{argmax}_w \sum\limits_{i = 1}^N { {y_i}\log {p_1} + \left( {1 - {y_i}} \right)\log {p_0}}  \\
+\end{align*}
+\]</span> 注意到，这个表达式是交叉熵表达式的相反数乘 <span class="math inline">\(N\)</span>，MLE 中的对数(又叫对数似然)也保证了可以和指数函数相匹配，从而在大的区间汇总获取稳定的梯度。</p>
+<p>对这个函数求导数，注意到： <span class="math display">\[
+g&#39;=(\frac{1}{1+\exp(-c)})&#39;=g(1-g)
+\]</span> 则： <span class="math display">\[
+\begin{align*}
+J&#39;(w)&amp;=\sum\limits_{i = 1}^N { {y_i}} p_1^{ - 1}.{p_1}\left( {1 - {p_1}} \right){x_i} + \left( {1 - {y_i}} \right)\left( { - {p_1}} \right){x_i} \\
+&amp;=\sum\limits_{i=1}^Ny_i(1-p_1)x_i-p_1x_i+y_ip_1x_i \\
+&amp;=\sum\limits_{i=1}^N(y_i-p_1)x_i
+\end{align*}
+\]</span> 由于概率值的非线性，放在求和符号中时，这个式子无法直接求解。于是在实际训练的时候，和感知机类似，也可以使用不同大小的批量随机梯度上升（对于最小化就是梯度下降）来获得这个函数的极大值。</p>
+<h2 id="软分类-高斯判别分析">软分类-高斯判别分析</h2>
+<p>高斯判别分析(GDA)是概率生成模型。在生成模型中，我们对联合概率分布进行建模，然后采用 MAP 来获得参数的最佳值。在GDA中，针对两分类的情况，我们采用的假设：</p>
+<ol type="1">
+<li><span class="math inline">\(y\sim Bernoulli(\phi)\)</span></li>
+<li><span class="math inline">\(x|y=1\sim\mathcal{N}(\mu_1,\Sigma)\)</span></li>
+<li><span class="math inline">\(x|y=0\sim\mathcal{N}(\mu_0,\Sigma)\)</span></li>
+</ol>
+<p>那么独立同分布的数据集最大后验概率估计MAP可以表示为： <span class="math display">\[
+\hat y = \mathop{argmax}_{y \in \left\{ {0,1} \right\}}P\left( {y|x} \right) =\mathop{argmax}_y P\left( y \right)P\left( {x|y} \right)
+\]</span> 于是： <span class="math display">\[
+\begin{align}
+\mathop{argmax}_{\phi,\mu_0,\mu_1,\Sigma}\log p(X|Y)p(Y)&amp;=\mathop{argmax}_{\phi,\mu_0,\mu_1,\Sigma}\sum\limits_{i=1}^N (\log p(x_i|y_i)+\log p(y_i))\nonumber\\
+&amp;=\mathop{argmax}_{\phi,\mu_0,\mu_1,\Sigma}\sum\limits_{i=1}^N(\log\mathcal{N}(\mu_0,\Sigma)^{1-y_i}+\log \mathcal{N}(\mu_1,\Sigma)^{y_i}+\log\phi^{y_i}(1-\phi)^{1-y_i})
+\end{align}
+\]</span></p>
+<ul>
+<li><p>首先对 <span class="math inline">\(\phi\)</span> 进行求解， <span class="math display">\[
+\begin{align}
+\sum\limits_{i = 1}^N {\log {\phi ^{ {y_i}}}{ {(1 - \phi )}^{1 - {y_i}}}}&amp;=\sum\limits_{i = 1}^N { {y_i}\log \phi  + \left( {1 - {y_i}} \right)\log (1 - \phi )}  \\
+\end{align}
+\]</span> 将上式对 <span class="math inline">\(\phi\)</span> 求偏导： <span class="math display">\[
+\sum\limits_{i = 1}^N {\frac{ { {y_i}}}{\phi }}  + \left( {1 - {y_i}} \right)\frac{1}{ {1 - \phi }}\left( { - 1} \right) = 0 \\
+\Longrightarrow  \sum\limits_{i = 1}^N { {y_i}\left( {1 - \phi } \right) - \left( {1 - {y_i}} \right)\phi }  = 0\\
+\Longrightarrow\phi=\frac{\sum\limits_{i=1}^Ny_i}{N}=\frac{N_1}{N}
+\]</span></p></li>
+<li><p>然后求解 <span class="math inline">\(\mu_1\)</span>： <span class="math display">\[
+\begin{align*}
+\hat{\mu_1}&amp;=\mathop {argmax}\limits_{ {\mu _1}} \sum\limits_{i = 1}^N {\log \mathcal{N}{ {({\mu _1},\Sigma )}^{ {y_i}}}}  \\
+&amp;=\mathop{argmax}_{\mu_1}\sum\limits_{i=1}^Ny_i\log\mathcal{N}(\mu_1,\Sigma)\nonumber\\
+&amp;= \mathop {argmax}\limits_{ {\mu _1}} \sum\limits_{i = 1}^N { {y_i}\log \frac{1}{ { { {\left( {2\pi } \right)}^{ {p维/2}}}{ {\left| \Sigma  \right|}^{ {1/2}}}}}} {e^{ {\text{ - }}\frac{ {\text{1}}}{ {\text{2}}}{ {\left( { {x_i} - {\mu _1}} \right)}^T}{\Sigma^{-1}}\left( { {x_i} - {\mu _1}} \right)}}\\
+&amp;= \mathop {argmax}\limits_{ {\mu _1}} \sum\limits_{i = 1}^N { {y_i}\left( { {\text{ - }}\frac{ {\text{1}}}{ {\text{2}}}{ {\left( { {x_i} - {\mu _1}} \right)}^T}{\Sigma^{-1}}\left( { {x_i} - {\mu _1}} \right)} \right)} \\
+&amp;=\mathop{argmin}_{\mu_1}\sum\limits_{i=1}^Ny_i(x_i-\mu_1)^T\Sigma^{-1}(x_i-\mu_1)
+\end{align*}
+\]</span> 由于： <span class="math display">\[
+\begin{align*}
+\sum\limits_{i=1}^Ny_i(x_i-\mu_1)^T\Sigma^{-1}(x_i-\mu_1)&amp;= \sum\limits_{i = 1}^N { {y_i}} \left( { {x_i}^T{\Sigma ^{ - 1}} - {\mu _1}^T{\Sigma ^{ - 1}}} \right)({x_i} - {\mu _1})\\
+&amp;= \sum\limits_{i = 1}^N { {y_i}} \left( { {x_i}^T{\Sigma ^{ - 1}}{x_i} - {x_i}^T{\Sigma ^{ - 1}}{\mu _1} - {\mu _1}^T{\Sigma ^{ - 1}}{x_i} + {\mu _1}^T{\Sigma ^{ - 1}}{\mu _1}} \right)\\
+&amp;= \sum\limits_{i=1}^Ny_ix_i^T\Sigma^{-1}x_i-2y_i\mu_1^T\Sigma^{-1}x_i+y_i\mu_1^T\Sigma^{-1}\mu_1 \\
+\end{align*}
+\]</span></p></li>
+</ul>
+<p>对上式求<span class="math inline">\(\mu_1\)</span> 的微分，可以得到： <span class="math display">\[
+\begin{align*}
+&amp;\sum\limits_{i=1}^N-2y_i\Sigma^{-1}x_i+2y_i\Sigma^{-1}\mu_1=0\nonumber\\
+&amp;\Longrightarrow \sum\limits_{i = 1}^N { {y_i}\left( { {\Sigma ^{ - 1}}{x_i} - {\Sigma ^{ - 1}}{\mu _1}} \right)}  = 0\\
+&amp;\Longrightarrow \sum\limits_{i = 1}^N { {y_i}\left( { {x_i} - {\mu _1}} \right)}  = 0\\
+&amp;\Longrightarrow\sum\limits_{i = 1}^N { {y_i}{x_i}}  = \sum\limits_{i = 1}^N { {y_i}{\mu _1}} \\
+&amp;\Longrightarrow\mu_1=\frac{\sum\limits_{i=1}^Ny_ix_i}{\sum\limits_{i=1}^Ny_i}=\frac{\sum\limits_{i=1}^Ny_ix_i}{N_1}
+\end{align*}
+\]</span></p>
+<ul>
+<li><p>求解 <span class="math inline">\(\mu_0\)</span>，由于正反例是对称的，所以： <span class="math display">\[
+\mu_0=\frac{\sum\limits_{i=1}^N(1-y_i)x_i}{N_0}
+\]</span></p></li>
+<li><p>最为困难的是求解 <span class="math inline">\(\Sigma\)</span>，我们的模型假设对正反例采用相同的协方差矩阵，当然从上面的求解中我们可以看到，即使采用不同的矩阵也不会影响之前的三个参数。首先我们先看下式： <span class="math display">\[
+\begin{align*}
+\sum\limits_{i=1}^N\log\mathcal{N}(\mu,\Sigma)&amp;=\sum\limits_{i=1}^N\log(\frac{1}{(2\pi)^{p/2}|\Sigma|^{1/2}})+(-\frac{1}{2}(x_i-\mu)^T\Sigma^{-1}(x_i-\mu))\nonumber\\
+&amp;=\sum\limits_{i=1}^N \log \frac{1}{(2 \pi)^{p / 2}}+\log |\Sigma|^{-1 / 2}-\frac{1}{2}\left(x_{i}-\mu\right)^{T} \Sigma^{-1}\left(x_{i}-\mu\right)\\
+&amp;=Const - \frac{1}{2}\sum\limits_{i = 1}^N {\log \left| \Sigma  \right|}  - \frac{1}{2}\sum\limits_{i = 1}^N { { {\left( { {x_i} - \mu } \right)}^T}{\Sigma ^{ - 1}}\left( { {x_i} - \mu } \right)} \\
+&amp;\because { { {\left( { {x_i} - \mu } \right)}^T}{\Sigma ^{ - 1}}\left( { {x_i} - \mu } \right)} \ is \ a \ scalar \ \\
+&amp;\therefore Trace({ { {\left( { {x_i} - \mu } \right)}^T}{\Sigma ^{ - 1}}\left( { {x_i} - \mu } \right)}) = { { {\left( { {x_i} - \mu } \right)}^T}{\Sigma ^{ - 1}}\left( { {x_i} - \mu } \right)}\\
+&amp;=Const-\frac{1}{2}N\log|\Sigma|-\frac{1}{2}N*Trace((x_i-\mu)^T\Sigma^{-1}(x_i-\mu))\nonumber\\
+&amp;\because \ Trace(ABC)=Trace(CAB)=Trace(BCA)\\
+&amp;=Const-\frac{1}{2}N\log|\Sigma|-\frac{1}{2}N*Trace((x_i-\mu)(x_i-\mu)^T\Sigma^{-1})\nonumber\\
+&amp;=Const-\frac{1}{2}N\log|\Sigma|-\frac{1}{2}N*Trace(S\Sigma^{-1})
+\end{align*}
+\]</span> 在这个表达式中，我们在标量上加入迹从而可以交换矩阵的顺序，对于包含绝对值和迹的表达式的导数，我们有： <span class="math display">\[
+\begin{align}
+\frac{\partial}{\partial A}(|A|)&amp;=|A|A^{-1}\\
+\frac{\partial}{\partial A}Trace(AB)&amp;=B^T
+\end{align}
+\]</span> 因此： <span class="math display">\[
+\begin{align}
+\hat \Sigma &amp;=\mathop {argmax}\limits_{ {\Sigma}}\sum\limits_{i=1}^N((1-y_i)\log\mathcal{N}(\mu_0,\Sigma)+y_i\log \mathcal{N}(\mu_1,\Sigma) \nonumber\\
+&amp;=\mathop {argmax}\limits_{ {\Sigma}}Const-\frac{1}{2}N\log|\Sigma|-\frac{1}{2}N_1Trace(S_1\Sigma^{-1})-\frac{1}{2}N_2Trace(S_2\Sigma^{-1})
+\end{align}
+\]</span> 其中，<span class="math inline">\(S_1,S_2\)</span> 分别为两个类数据内部的协方差矩阵，于是对上式求微分可得： <span class="math display">\[
+\begin{align}
+&amp;N\frac{1}{ {\left| \Sigma  \right|}}\left| \Sigma  \right|{\Sigma ^{ - 1}} + {N_1}S_1^T\left( { - 1} \right){\Sigma ^{ - 2}} + {N_2}S_2^T\left( { - 1} \right){\Sigma ^{ - 2}}=0 \\
+&amp;\Longrightarrow N\Sigma^{-1}-N_1S_1^T\Sigma^{-2}-N_2S_2^T\Sigma^{-2}=0\nonumber\\
+&amp;\Longrightarrow \hat \Sigma=\frac{N_1S_1+N_2S_2}{N}
+\end{align}
+\]</span> 这里应用了类协方差矩阵的对称性。</p></li>
+</ul>
+<p>于是我们就利用最大后验的方法求得了我们模型假设里面的所有参数，根据模型，可以得到联合分布，也就可以得到用于推断的条件分布了。</p>
+<h2 id="软分类-朴素贝叶斯">软分类-朴素贝叶斯</h2>
+<p>上面的高斯判别分析的是对数据集的分布作出了高斯分布的假设，同时引入伯努利分布作为类先验，从而利用最大后验求得这些假设中的参数。</p>
+<p>而朴素贝叶斯（概率生成模型）对数据的属性之间的关系作出了假设，一般地，我们有需要得到 <span class="math inline">\(p(x|y)\)</span> 这个概率值，由于 <span class="math inline">\(x\)</span> 有 <span class="math inline">\(p\)</span> 个维度，因此需要对这么多的维度的联合概率进行采样，但是我们知道这么高维度的空间中采样需要的样本数量非常大才能获得较为准确的概率近似。</p>
+<p>在一般的有向概率图模型中，对各个<strong>属性维度</strong>之间的<strong>条件独立</strong>关系作出了不同的假设，其中最为简单的一个假设就是在朴素贝叶斯模型描述中的条件独立性假设。 <span class="math display">\[
+p(x|y)=\prod\limits_{i=1}^pp(x_i|y)
+\]</span> 即： <span class="math display">\[
+x_i\perp x_j|y,\forall\  i\ne j
+\]</span> 于是利用贝叶斯定理，对于单次观测： <span class="math display">\[
+p(y|x)=\frac{p(x|y)p(y)}{p(x)}=\frac{\prod\limits_{i=1}^pp(x_i|y)p(y)}{p(x)}
+\]</span> 对于单个维度的条件概率以及类先验作出进一步的假设：</p>
+<ol type="1">
+<li><span class="math inline">\(x_i\)</span> 为连续变量：<span class="math inline">\(p(x_i|y)=\mathcal{N}(\mu_i,\sigma_i^2)\)</span></li>
+<li><span class="math inline">\(x_i\)</span> 为离散变量：类别分布（Categorical）：<span class="math inline">\(p(x_i=i|y)=\theta_i,\sum\limits_{i=1}^K\theta_i=1\)</span></li>
+<li><span class="math inline">\(p(y)=\phi^y(1-\phi)^{1-y}\)</span></li>
+</ol>
+<p>对这些参数的估计，常用 MLE 的方法直接在数据集上估计，由于不需要知道各个维度之间的关系，因此，所需数据量大大减少了。估算完这些参数，再代入贝叶斯定理中得到类别的后验分布。</p>
+<h2 id="小结">小结</h2>
+<p>​ 分类任务分为两类，对于需要直接输出类别的任务，感知机算法中我们在线性模型的基础上加入符号函数作为激活函数，那么就能得到这个类别，但是符号函数不光滑，于是我们采用错误驱动的方式，引入 <span class="math inline">\(\sum\limits_{x_i\in\mathcal{D}_{wrong}}-y_iw^Tx_i\)</span> 作为损失函数，然后最小化这个误差，采用批量随机梯度下降的方法来获取最佳的参数值。而在线性判别分析中，我们将线性模型看作是数据点在某一个方向的投影，采用类内小，类间大的思路来定义损失函数，其中类内小定义为两类数据的方差之和，类间大定义为两类数据中心点的间距，对损失函数求导得到参数的方向，这个方向就是 <span class="math inline">\(S_w^{-1}(\overline x_{c1}-\overline x_{c2})\)</span>，其中 <span class="math inline">\(S_w\)</span> 为原数据集两类的方差之和。</p>
+<p>​ 另一种任务是输出分类的概率，对于概率模型，我们有两种方案，第一种是<strong>判别模型</strong>，也就是直接对类别的条件概率建模，将线性模型套入 Logistic 函数中，我们就得到了 Logistic 回归模型，这里的概率解释是两类的联合概率比值的对数是线性的，我们定义的损失函数是交叉熵（等价于 MLE），对这个函数求导得到 <span class="math inline">\(\frac{1}{N}\sum\limits_{i=1}^N(y_i-p_1)x_i\)</span>，同样利用批量随机梯度（上升）的方法进行优化。第二种是<strong>生成模型</strong>，生成模型引入了类别的先验，在高斯判别分析中，我们对数据集的数据分布作出了假设，其中类先验是二项分布，而每一类的似然是高斯分布，对这个联合分布的对数似然进行最大化就得到了参数， <span class="math inline">\(\frac{\sum\limits_{i=1}^Ny_ix_i}{N_1},\frac{\sum\limits_{i=1}^N(1-y_i)x_i}{N_0},\frac{N_1S_1+N_2S_2}{N},\frac{N_1}{N}\)</span>。在朴素贝叶斯中，我们进一步对属性的各个维度之间的依赖关系作出假设，条件独立性假设大大减少了数据量的需求。</p>
+]]></content>
+      <categories>
+        <category>Machine Learning</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/2020/03/06/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="create-a-new-post">Create a new post</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
+<h3 id="run-server">Run server</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
+<h3 id="generate-static-files">Generate static files</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
+<h3 id="deploy-to-remote-sites">Deploy to remote sites</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>线性回归</title>
+    <url>/2020/03/05/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/</url>
+    <content><![CDATA[<h1 id="线性回归">线性回归</h1>
+<p>假设数据集为：</p>
+<p><span class="math display">\[
+\mathcal{D}=\{(x_1, y_1),(x_2, y_2),\cdots,(x_N, y_N)\}
+\]</span> 其中<span class="math inline">\({x_i} \in {\mathbb{R}^p},{y_i} \in \mathbb{R},i = 1,2, \cdots ,N\)</span></p>
+<p>我们记：</p>
+<p><span class="math display">\[
+X=(x_1,x_2,\cdots,x_N)^T=\left( {\begin{array}{*{20}{c}}
+{ {x_{11}}}&amp;{ {x_{12}} }&amp; \cdots &amp;{ {x_{1p}} }\\
+{ {x_{21}}}&amp;{ {x_{22}} }&amp; \cdots &amp;{ {x_{2p}} }\\
+ \vdots &amp; \vdots &amp; \vdots &amp; \vdots \\
+{ {x_{N1}} }&amp;{ {x_{N2}} }&amp; \cdots &amp;{ {x_{Np}} }
+\end{array}} \right)
+\]</span></p>
+<p><span class="math display">\[
+Y=(y_1,y_2,\cdots,y_N)^T=\left( {\begin{array}{*{20}{c}}
+{ {y_1} }\\
+{ {y_2} }\\
+ \vdots \\
+{ {y_N} }
+\end{array}} \right)
+\]</span></p>
+<p>线性回归假设：</p>
+<p><span class="math display">\[
+f(w)=w^Tx
+\]</span></p>
+<h2 id="最小二乘法">最小二乘法</h2>
+<p>对这个问题，采用二范数定义的平方误差来定义损失函数：</p>
+<p><span class="math display">\[
+L(w)=\sum\limits_{i=1}^N||w^Tx_i-y_i||^2_2
+\]</span> 展开得到：</p>
+<p><span class="math display">\[
+\begin{align}
+L(w)&amp;=\sum\limits_{i=1}^N(w^Tx_i-y_i)^2 \\
+&amp;=(w^Tx_1-y_1,\cdots,w^Tx_N-y_N)\cdot (w^Tx_1-y_1,\cdots,w^Tx_N-y_N)^T\nonumber\\
+&amp;=(w^TX^T-Y^T)\cdot (Xw-Y)=w^TX^TXw-Y^TXw-w^TX^TY+Y^TY\nonumber\\
+&amp;=w^TX^TXw-2w^TX^TY+Y^TY
+\end{align}
+\]</span> 最小化这个值的 $ $ ：</p>
+<p><span class="math display">\[
+\begin{align}
+\hat{w}=\mathop{argmin}\limits_wL(w)&amp;\longrightarrow\frac{\partial}{\partial w}L(w)=0\nonumber\\
+&amp;\longrightarrow2X^TX\hat{w}-2X^TY=0\nonumber\\
+&amp;\longrightarrow \hat{w}=(X^TX)^{-1}X^TY=X^+Y
+\end{align}
+\]</span> 这个式子中 <span class="math inline">\((X^TX)^{-1}X^T\)</span> 又被称为广义逆。对于行满秩或者列满秩的 <span class="math inline">\(X\)</span>，可以直接求解，但是对于非满秩的样本集合，需要使用奇异值分解（SVD）的方法。</p>
+<p>在几何上，最小二乘法相当于模型和试验值的距离的平方求和。</p>
+<p>换一个角度来看，我们把<span class="math inline">\(X\)</span>看成是张成一个 <span class="math inline">\(p\)</span> 维空间（满秩的情况）：<span class="math inline">\(X=Span(x_1,\cdots,x_N)\)</span>，而模型可以写成 <span class="math inline">\(f(w)=X\beta\)</span>，也就是 <span class="math inline">\(x_1,\cdots,x_p\)</span> 的某种组合，而最小二乘法就是说希望 <span class="math inline">\(Y\)</span> 和这个模型距离越小越好，于是根据投影规则它们的差应该与这个张成的空间垂直：</p>
+<p><span class="math display">\[
+X^T\cdot(Y-X\beta)=0\longrightarrow\beta=(X^TX)^{-1}X^TY
+\]</span></p>
+<h2 id="概率角度下的线性回归">概率角度下的线性回归</h2>
+<p>假设我们的样本数据中的噪声<span class="math inline">\(\epsilon\)</span> 服从高斯分布，即<span class="math inline">\(\epsilon\sim\mathcal{N}(0,\sigma^2)\)</span> 。</p>
+<p><span class="math display">\[
+\begin{array}{l}
+\because y = f\left( \omega  \right) + \varepsilon  = {\omega ^T}x + \varepsilon \\
+\therefore y|x;w \sim \mathcal{N}\left( { {\omega ^T}x,{\sigma ^2}} \right)\longrightarrow\frac{1}{ {\sqrt {2\pi } \sigma }}{e^{ - \frac{ { { {\left( {y - {\omega ^T}x} \right)}^2}}}{ {2{\sigma ^2}}}}}
+\end{array}
+\]</span> 代入极大似然估计中：</p>
+<p><span class="math display">\[
+\begin{align}
+L(w)=\log p(Y|X,w)&amp;=\log\prod\limits_{i=1}^Np(y_i|x_i,w)\nonumber \\
+&amp;=\sum\limits_{i = 1}^N \log(p(y_i|x_i,w))\nonumber\\
+&amp;=\sum\limits_{i=1}^N\log(\frac{1}{\sqrt{2\pi\sigma}}e^{-\frac{(y_i-w^Tx_i)^2}{2\sigma^2}})\nonumber\\
+&amp;=\sum\limits_{i = 1}^N {\left[ {\log (\frac{1}{ {\sqrt {2\pi \sigma } }}) - \frac{ { { {({y_i} - {w^T}{x_i})}^2}}}{ {2{\sigma ^2}}}} \right]} \nonumber\\
+\therefore \mathop{argmax}\limits_wL(w)&amp;=\mathop{argmin}\limits_w\sum\limits_{i=1}^N(y_i-w^Tx_i)^2
+\end{align}
+\]</span> 这个表达式和最小二乘估计得到的结果一样。即最小二乘估计隐含了数据的噪声服从高斯分布。</p>
+<h2 id="正则化">正则化</h2>
+<p>在实际应用时，如果样本容量不远远大于样本的特征维度，很可能造成过拟合，对这种情况，我们有下面三个解决方式：</p>
+<ol type="1">
+<li><p>加数据，数据增强</p></li>
+<li><p>特征选择/特征提取。</p></li>
+<li><p>正则化</p></li>
+</ol>
+<p>正则化一般是在损失函数（如上面介绍的最小二乘损失）上加入正则化项（表示模型的复杂度对模型的惩罚），下面我们介绍一般情况下的两种正则化框架。</p>
+<p><span class="math display">\[
+\begin{align}
+L1&amp;:\mathop{argmin}\limits_wL(w)+\lambda||w||_1,\lambda\gt0 \nonumber\\
+L2&amp;:\mathop{argmin}\limits_wL(w)+\lambda||w||^2_2,\lambda \gt 0 \nonumber
+\end{align}
+\]</span></p>
+<p>下面对最小二乘误差分别分析这两者的区别。</p>
+<h3 id="l1-lasso">L1 Lasso</h3>
+<p><strong>L1</strong> 正则化相当于：</p>
+<p><span class="math display">\[
+\mathop{argmin}\limits_wL(w)\\
+s.t. ||w||_1\lt C
+\]</span></p>
+<p>我们已经看到平方误差损失函数在 <span class="math inline">\(w\)</span> 空间是一个椭球，因此上式求解就是椭球和 <span class="math inline">\(||w||_1=C\)</span>的切点，因此更容易相切在坐标轴上。</p>
+<p>注意<strong>L1</strong>正则化容易引起稀疏解。</p>
+<h3 id="l2-ridge">L2 Ridge</h3>
+<p><strong>L2</strong>正则化实践中使用的最多。对于损失函数<span class="math inline">\(J\left( w \right)\)</span> :</p>
+<p><span class="math display">\[
+\begin{align}
+J\left( w \right) &amp;= L(w) + \lambda {w^T}w \nonumber\\
+&amp;= {w^T}{X^T}Xw - 2{w^T}{X^T}Y + {Y^T}Y + \lambda {w^T}w \nonumber\\
+&amp;={w^T}\left( { {X^T}X + \lambda \mathbb{I}} \right)w - 2{w^T}{X^T}Y + {Y^T}Y \nonumber
+\end{align}
+\]</span></p>
+<p><span class="math display">\[
+\begin{align}
+\hat{w}=\mathop{argmin}\limits_wJ\left( w \right)&amp;\longrightarrow\frac{\partial}{\partial w}J\left( w \right)=0\nonumber\\
+&amp;\longrightarrow{\rm{2}}\left( { {X^T}X + \lambda \mathbb{I}} \right)w - 2{X^T}Y = 0\nonumber\\
+&amp;\longrightarrow \hat{w}=(X^TX+\lambda \mathbb{I})^{-1}X^TY \nonumber
+\end{align}
+\]</span></p>
+<p>可以看到，利用2范数进行正则化不仅可以使模型选择 <span class="math inline">\(w\)</span> 较小的参数，同时也避免 $ X<sup>TX<span class="math inline">\(不可逆的问题。因为半正定\)</span>{X</sup>T}X$ 加上对角矩阵一定是正定矩阵，即一定可逆。</p>
+<h2 id="贝叶斯角度下的线性回归">贝叶斯角度下的线性回归</h2>
+<p>从贝叶斯角度来看，我们将<span class="math inline">\(w\)</span> 看作一个先验，取先验分布 <span class="math inline">\(w\sim\mathcal{N}(0,\sigma_0^2)\)</span>。</p>
+<p>又因为：</p>
+<p><span class="math display">\[
+P\left( {w|y} \right) = \frac{ {P\left( {y|w} \right)P\left( w \right)}}{ {P\left( y \right)}}
+\]</span></p>
+<p>所以MAP最大后验估计参数<span class="math inline">\(w\)</span> :</p>
+<p><span class="math display">\[
+\begin{align}
+\hat{w}=\mathop{argmax}\limits_wp(w|Y)&amp;=\mathop{argmax}\limits_wp(Y|w)p(w)\nonumber\\
+&amp;=\mathop{argmax}\limits_w\log p(Y|w)p(w)\nonumber\\
+&amp;=\mathop{argmax}\limits_w(\log p(Y|w)+\log p(w))\nonumber\\
+\end{align}
+\]</span></p>
+<p>又因为第二章节可知，<span class="math inline">\(y|x;w \sim \mathcal{N}\left( { {\omega ^T}x,{\sigma ^2}} \right)\longrightarrow\frac{1}{ {\sqrt {2\pi } \sigma }}{e^{ - \frac{ { { {\left( {y - {\omega ^T}x} \right)}^2}}}{ {2{\sigma ^2}}}}}\)</span> ，所以 <span class="math inline">\(P\left( {y|w} \right)=\frac{1}{ {\sqrt {2\pi } \sigma }}{e^{ - \frac{ { { {\left( {y - {\omega ^T}x} \right)}^2}}}{ {2{\sigma ^2}}}}}\)</span> 。根据先验分布，我们知道<span class="math inline">\(P\left( w \right) = \frac{1}{ {\sqrt {2\pi } {\sigma _0}}}{e^{ - \frac{ { { {\left\| w \right\|}^2}}}{ {2{\sigma _0}^2}}}}\)</span> 。</p>
+<p>所以，</p>
+<p><span class="math display">\[
+\begin{align}
+\hat{w}&amp;=\mathop{argmax}\limits_w\sum\limits_{i = 1}^N {\left[ {\log (\frac{1}{ {\sqrt {2\pi } \sigma }}\frac{1}{ {\sqrt {2\pi } {\sigma _0}}}) + \log ({e^{ - \frac{ { { { \left( { {y_i} - {w^T}{x_i}} \right)}^2}}}{ {2{\sigma ^2}}} - \frac{ { { {\left\| w \right\|}^2}}}{ {2{\sigma _0}^2}}}})} \right]} \nonumber\\
+&amp;=\mathop {\arg \min }\limits_w \sum\limits_{i = 1}^N {\left[ {\frac{ { { {\left( { {y_i} - {w^T}{x_i}} \right)}^2}}}{ {2{\sigma ^2}}} + \frac{ { { {\left\| w \right\|}^2}}}{ {2{\sigma _0}^2}}} \right]} \nonumber\\
+&amp;=\mathop {\arg \min }\limits_w \sum\limits_{i = 1}^N {\left[ { { {\left( { {y_i} - {w^T}{x_i}} \right)}^2} + \frac{ { {\sigma ^2}}}{ { {\sigma _0}^2}}{ {\left\| w \right\|}^2}} \right]} \nonumber
+\end{align}
+\]</span></p>
+<p>如果我们把<span class="math inline">\({\frac{ { {\sigma ^2}}}{ { {\sigma _0}^2} } }\)</span> 记作<span class="math inline">\(\lambda\)</span> ，我们将会看到，由于超参数 <span class="math inline">\(\sigma_0\)</span>的存在和 <strong>L2</strong> Ridge 正则项可以对应，同样的如果将先验分布取为 Laplace 分布，那么就会得到和 <strong>L1</strong> 正则类似的结果。</p>
+<h2 id="小结">小结</h2>
+<p>线性回归模型是最简单的模型，但是麻雀虽小，五脏俱全，在这里，我们利用最小二乘误差得到了闭式解析解。同时也发现，在噪声为高斯分布的时候，MLE极大似然估计的解等价于最小二乘估计LSE。而增加了<strong>L2</strong>正则项后的LSE，等价于高斯噪声先验下的 MAP最大后验估计解，加上 <strong>L1</strong> 正则项后，等价于 Laplace 噪声先验。</p>
+<p>传统的机器学习方法或多或少都有线性回归模型的影子：</p>
+<ol type="1">
+<li>线性模型往往不能很好地拟合数据，因此有三种方案克服这一劣势：
+<ul>
+<li><p>对特征的维数进行变换，例如多项式回归模型就是在线性特征的基础上加入高次项。</p></li>
+<li><p>在线性方程后面加入一个非线性变换，即引入一个非线性的激活函数，典型的有线性分类模型如感知机。</p></li>
+<li><p>对于一致的线性系数，我们进行多次变换，这样同一个特征不仅仅被单个系数影响，例如多层感知机（深度前馈网络）。</p></li>
+</ul></li>
+<li>线性回归在整个样本空间都是线性的，我们修改这个限制，在不同区域引入不同的线性或非线性，例如线性样条回归和决策树模型。</li>
+<li>线性回归中使用了所有的样本，但是对数据预先进行加工学习的效果可能更好（所谓的维数灾难，高维度数据更难学习），例如 PCA 算法和流形学习。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Machine Learning</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>单例模式</title>
+    <url>/2020/02/11/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/</url>
+    <content><![CDATA[<h2 id="单例模式的定义">单例模式的定义</h2>
+<p>单例模式（Singleton Pattern）是最简单的设计模式之一。这种类型的设计模式属于创建型模式，它提供了一种创建对象的最佳方式。</p>
+<p>这种模式涉及到一个单一的类，该类负责创建自己的对象，同时确保只有单个对象被创建。这个类提供了一种访问其唯一的对象的方式，可以直接访问，不需要实例化该类的对象。</p>
+<p><strong>注意：</strong></p>
+<ul>
+<li>1、单例类只能有一个实例。</li>
+<li>2、单例类必须自己创建自己的唯一实例。</li>
+<li>3、单例类必须给所有其他对象提供这一实例。</li>
+</ul>
+<h2 id="方法一基类">方法一：基类</h2>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Singleton</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__new__</span><span class="params">(cls, *args, **kwargs)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> hasattr(cls, <span class="string">'_instance'</span>):</span><br><span class="line">            cls._instance = super().__new__(cls, *args, **kwargs)</span><br><span class="line">        <span class="keyword">return</span> cls._instance</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span><span class="params">(Singleton)</span>:</span></span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">foo1 = Foo()</span><br><span class="line">foo2 = Foo()</span><br><span class="line"></span><br><span class="line">print(foo1 <span class="keyword">is</span> foo2)  <span class="comment"># True</span></span><br></pre></td></tr></table></figure>
+<p><strong>说明</strong>：</p>
+<p>方法一借助了<code>__new__</code>的特性：</p>
+<ul>
+<li><p><code>__new__</code>是在<code>__init__</code>之前被调用的特殊方法；</p></li>
+<li><p><code>__new__</code>是用来创建对象并返回这个对象，而<code>__init__</code>只是将传入的参数初始化给对象</p></li>
+</ul>
+<p>实际中，很少会用到<code>__new__</code>，除非你希望能够控制对象的创建。</p>
+<p>在这里，类Singleton是我们要创建的对象，我们希望能够自定义它使之完成单例模式，所以我们改写了<code>__new__</code>。因为自定义的<code>__new__</code>重载了父类的<code>__new__</code>，所以要自己显式调用父类的<code>__new__</code>，即object.<code>__new__</code>(cls, *args, **kwargs)，或者用super().<code>__new__</code>(cls, *args, **kwargs)。</p>
+<h2 id="方法二-元类">方法二： 元类</h2>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Singleton</span><span class="params">(type)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(cls, *args, **kwargs)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> hasattr(cls, <span class="string">'_instance'</span>):</span><br><span class="line">            cls._instance = super().__call__(*args, **kwargs)</span><br><span class="line">        <span class="keyword">return</span> cls._instance</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span><span class="params">(metaclass=Singleton)</span>:</span></span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">foo1 = Foo()  <span class="comment"># Foo类是元类的实例，这里调用元类的__call__</span></span><br><span class="line">foo2 = Foo()</span><br><span class="line"></span><br><span class="line">print(foo1 <span class="keyword">is</span> foo2)  <span class="comment"># True</span></span><br></pre></td></tr></table></figure>
+<p><strong>说明</strong></p>
+<p>1、 为什么构建元类的时候重载<code>__call__</code>，而不是<code>__new__</code>?</p>
+<p>回答：首先说一下元类metaclass的<code>__new__</code>和普通类class的<code>__new__</code>的区别。在方法一我们提到过，普通类class中的<code>__new__</code>的作用是创建对象并返回这个对象，并且是在<code>__init__</code>之前被调用。而元类metaclass的<code>__new__</code>会在你<strong>定义类</strong>(根据上面的例子，这里是类Foo)的时候执行，并且只会执行<strong>一次</strong>。</p>
+<p>说到这里，我们可以发现元类的<code>__new__</code>由于只能执行一次，而且在定义的时候就执行了，所以我们不可能依赖元类的<code>__new__</code>来完成单例模式的特性，即无论你多次创建类Foo的实例，元类的<code>__new__</code>早就在定义类Foo的时候就执行完毕了。</p>
+<p>所以，我们把目光转向<code>__call__</code>。我们都知道<code>__call__</code>会在你每次实例化的时候调用。又因为类Foo是元类Singleton创建出来的类，可以认为Foo是Singleton的实例对象。所以每次Foo()的时候都会去调用元类的<code>__call__</code>。而在<code>__call__</code>中我们拿到已经创建好的实例对象，不就是单例吗。</p>
+<h2 id="方法三使用模块">方法三：使用模块</h2>
+<p>其实，<strong>Python 的模块就是天然的单例模式</strong>，因为模块在第一次导入时，<strong>会生成 .pyc 文件</strong>，当第二次导入时，就会直接加载 .pyc 文件，而不会再次执行模块代码。因此，我们只需把相关的函数和数据定义在一个模块中，就可以获得一个单例对象了。如果我们真的想要一个单例类，可以考虑这样做：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Singleton</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">foo</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"> </span><br><span class="line">singleton = Singleton()</span><br></pre></td></tr></table></figure>
+<p>将上面的代码保存在文件 <code>mysingleton.py</code> 中，要使用时，直接在其他文件中导入此文件中的对象，这个对象即是单例模式的对象。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> mysingleton <span class="keyword">import</span> singleton</span><br></pre></td></tr></table></figure>
+<h2 id="方法四-装饰器">方法四： 装饰器</h2>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">singleton</span><span class="params">(class_)</span>:</span></span><br><span class="line">    instances = &#123;&#125; <span class="comment"># 为什么这里不直接为None,因为内部函数没法访问外部函数的非容器变量(闭包特性)</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">getinstance</span><span class="params">(*args, **kwargs)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> class_ <span class="keyword">not</span> <span class="keyword">in</span> instances:</span><br><span class="line">            instances[class_] = class_(*args, **kwargs)</span><br><span class="line">        <span class="keyword">return</span> instances[class_]</span><br><span class="line">    <span class="keyword">return</span> getinstance</span><br><span class="line"></span><br><span class="line"><span class="meta">@singleton</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyClass</span><span class="params">(BaseClass)</span>:</span></span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">foo1 = Foo()</span><br><span class="line">foo2 = Foo()</span><br><span class="line"></span><br><span class="line">print(foo1 <span class="keyword">is</span> foo2)  <span class="comment"># True</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Python</category>
+      </categories>
+      <tags>
+        <tag>Singleton</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>元类</title>
+    <url>/2020/02/10/%E5%85%83%E7%B1%BB/</url>
+    <content><![CDATA[<h2 id="类也是对象">类也是对象</h2>
+<p>在理解<code>metaclass</code>之前，我们先要掌握python中的类<code>class</code>是什么。 python中类的概念，是借鉴自smalltalk语言。 在大部分语言中，类指的是"描述如何产生一个对象(object)"的一段代码，这对于python也是如此。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="class"><span class="keyword">class</span> <span class="title">ObjectCreator</span><span class="params">()</span>:</span></span><br><span class="line"><span class="meta">... </span>    <span class="keyword">pass</span></span><br><span class="line">...</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>my_object = ObjectCreator()</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(my_object)</span><br><span class="line">&lt;__main__.ObjectCreator object at <span class="number">0x8974f2c</span>&gt;</span><br></pre></td></tr></table></figure>
+<p>但是，在python中，类远不止如此，类同时也是对象。 当你遇到关键词<code>class</code>的时候，Python就会自动执行产生一个对象。下面的代码段中:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="class"><span class="keyword">class</span> <span class="title">ObjectCreator</span><span class="params">()</span>:</span></span><br><span class="line"><span class="meta">... </span>    <span class="keyword">pass</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>Python在内存中产生了一个名叫做"ObjectCreator"的对象。这个对象(类)自身拥有产生对象(实例instance)的能力。 同时，它也是一个对象，因此你可以对它做如下操作:</p>
+<ul>
+<li><p>赋值给变量</p></li>
+<li><p>复制它</p></li>
+<li><p>为它增加属性(attribute)</p></li>
+<li><p>作为参数传值给函数</p></li>
+</ul>
+<p>举例：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(ObjectCreator) <span class="comment"># 你可以打印一个类,因为它同时也是对象</span></span><br><span class="line">&lt;<span class="class"><span class="keyword">class</span> '<span class="title">__main__</span>.<span class="title">ObjectCreator</span>'&gt;</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">&gt;&gt;&gt; <span class="title">def</span> <span class="title">echo</span><span class="params">(o)</span>:</span></span><br><span class="line"><span class="meta">... </span>    print(o)</span><br><span class="line">...</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>echo(ObjectCreator) <span class="comment"># 作为参数传值给函数</span></span><br><span class="line">&lt;<span class="class"><span class="keyword">class</span> '<span class="title">__main__</span>.<span class="title">ObjectCreator</span>'&gt;</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">&gt;&gt;&gt; <span class="title">print</span><span class="params">(hasattr<span class="params">(ObjectCreator, <span class="string">'new_attribute'</span>)</span>)</span></span></span><br><span class="line"><span class="class"><span class="title">False</span></span></span><br><span class="line">&gt;&gt;&gt; ObjectCreator.new_attribute = 'foo' # you can add attributes to a class</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(hasattr(ObjectCreator, <span class="string">'new_attribute'</span>))</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(ObjectCreator.new_attribute)</span><br><span class="line">foo</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>ObjectCreatorMirror = ObjectCreator <span class="comment"># 将类赋值给变量</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(ObjectCreatorMirror.new_attribute)</span><br><span class="line">foo</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(ObjectCreatorMirror())</span><br><span class="line">&lt;__main__.ObjectCreator object at <span class="number">0x8997b4c</span>&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="type">type()</h2>
+<p>先来说说大家所认识的<code>type</code>。这个古老而好用的函数，可以让我们知道一个对象的类型是什么。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(type(<span class="number">1</span>))</span><br><span class="line">&lt;type <span class="string">'int'</span>&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(type(<span class="string">"1"</span>))</span><br><span class="line">&lt;type <span class="string">'str'</span>&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(type(ObjectCreator))</span><br><span class="line">&lt;type <span class="string">'type'</span>&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(type(ObjectCreator()))</span><br><span class="line">&lt;<span class="class"><span class="keyword">class</span> '<span class="title">__main__</span>.<span class="title">ObjectCreator</span>'&gt;</span></span><br></pre></td></tr></table></figure>
+<p>实际上，<code>type</code>还有一个完全不同的功能，它可以在运行时产生类。<code>type</code>可以传入一些参数，然后返回一个类。下面举例<code>type</code>创建类的用法。首先，对于类一般是这么定义的:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="class"><span class="keyword">class</span> <span class="title">MyShinyClass</span><span class="params">(object)</span>:</span></span><br><span class="line"><span class="meta">... </span>    <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+<p>在下面，MyShinyClass也可以这样子被创建出来,并且跟上面的创建方法有一样的表现:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>MyShinyClass = type(<span class="string">'MyShinyClass'</span>, (), &#123;&#125;) <span class="comment"># returns a class object</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(MyShinyClass)</span><br><span class="line">&lt;<span class="class"><span class="keyword">class</span> '<span class="title">__main__</span>.<span class="title">MyShinyClass</span>'&gt;</span></span><br><span class="line"><span class="class">&gt;&gt;&gt; <span class="title">print</span><span class="params">(MyShinyClass<span class="params">()</span>)</span> # <span class="title">create</span> <span class="title">an</span> <span class="title">instance</span> <span class="title">with</span> <span class="title">the</span> <span class="title">class</span></span></span><br><span class="line"><span class="class">&lt;<span class="title">__main__</span>.<span class="title">MyShinyClass</span> <span class="title">object</span> <span class="title">at</span> 0<span class="title">x8997cec</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>type</code>创建类需要传入三个参数,分别为:</p>
+<ul>
+<li>类的名字</li>
+<li>一组"类的父类"的元组(tuple) (这个会实现继承,也可以为空)</li>
+<li>字典 (类的属性名与值,key-value的形式，不传相当于为空).</li>
+</ul>
+<p>下面来点复杂的，来更好的理解<code>type</code>传入的三个参数:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span><span class="params">(object)</span>:</span></span><br><span class="line">    bar = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">echo_bar</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(self.bar)</span><br></pre></td></tr></table></figure>
+<p>等价于:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">echo_bar</span><span class="params">(self)</span>:</span></span><br><span class="line">    print(self.bar)</span><br><span class="line"></span><br><span class="line">Foo = type(<span class="string">'Foo'</span>, (), &#123;<span class="string">'bar'</span>:<span class="literal">True</span>, <span class="string">'echo_bar'</span>: echo_bar&#125;)</span><br></pre></td></tr></table></figure>
+<p>看点有继承关系的类的实现:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FooChild</span><span class="params">(Foo)</span>:</span></span><br><span class="line">    <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+<p>等价于:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">FooChild = type(<span class="string">'FooChild'</span>, (Foo, ), &#123;&#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="什么是元类">什么是元类</h2>
+<p>metaclass 就是创建类的那家伙。(事实上，<code>type</code>就是一个metaclass)</p>
+<p>我们知道,我们定义了class就是为了能够创建object的，那么，metaclass就是用来创造“类对象”的类.它是“类对象”的“类”。</p>
+<p>可以这样子来理解:</p>
+<figure>
+<img src="/2020/02/10/%E5%85%83%E7%B1%BB/python_metaclass.png" alt><figcaption>python_metaclass</figcaption>
+</figure>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">MyClass = MetaClass()</span><br><span class="line">MyObject = MyClass()</span><br></pre></td></tr></table></figure>
+<p>也可以用我们上面的<code>type</code>来表示：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">MyClass = type(<span class="string">'MyClass'</span>, (), &#123;&#125;)</span><br></pre></td></tr></table></figure>
+<p>说白了，函数<code>type</code>就是一个特殊的metaclass。</p>
+<p>python在背后使用<code>type</code>创造了所有的类。<code>type</code>是所有类的metaclass。</p>
+<p>metaclass就是创造类对象的工具.如果你喜欢，你也可以称之为"类的工厂".</p>
+<p>type是python內置的metaclass。不过，你也可以编写自己的metaclass.</p>
+<h2 id="自定义metaclass">自定义metaclass</h2>
+<p>使用metaclass的主要目的，是为了能够在创建类的时候，自动地修改类。</p>
+<p>一个很傻的需求，我们决定要将该模块中的所有类的属性，改为大写。</p>
+<p>有几种方法可以做到，这里使用<code>__metaclass__</code>来实现.</p>
+<p>在模块的层次定义metaclass，模块中的所有类都会使用它来创造类。我们只需要告诉metaclass，将所有的属性转化为大写。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UpperAttrMetaclass</span><span class="params">(type)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__new__</span><span class="params">(cls, clsname, bases, attrs)</span>:</span>  <span class="comment">#也可以写成__new__(cls, *args, **kwargs)</span></span><br><span class="line">        uppercase_attr = &#123;&#125;</span><br><span class="line">        <span class="keyword">for</span> name, val <span class="keyword">in</span> attrs.items():</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> name.startswith(<span class="string">'__'</span>):</span><br><span class="line">                uppercase_attr[name.upper()] = val</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                uppercase_attr[name] = val</span><br><span class="line">        <span class="keyword">return</span> super().__new__(cls, clsname, bases, uppercase_attr)</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line"> <span class="class"><span class="keyword">class</span> <span class="title">UpperFcn</span><span class="params">(metaclass=UpperAttrMetaclass)</span>:</span></span><br><span class="line">    <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Python</category>
+      </categories>
+      <tags>
+        <tag>metaclass</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Pyhton内省(introspection)</title>
+    <url>/2020/01/02/Pyhton%E5%86%85%E7%9C%81-introspection/</url>
+    <content><![CDATA[<h2 id="内省">内省</h2>
+<p>​ 在计算机科学中，内省指一种能力，可以确定对象是什么，包含何种信息，可以做什么。在runtime获得一个对象的全部类型信息。代码内省用于检查类、方法、对象、模块、关键字，并获取有关它们的信息，以便我们可以利用它。通过使用自省，我们可以动态地检查Python对象。</p>
+<h3 id="dir">dir</h3>
+<p><code>dir</code>返回属于对象的属性和方法的列表。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">my_list = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</span><br><span class="line">dir(my_list)</span><br><span class="line"><span class="comment"># Output: ['__add__', '__class__', '__contains__', '__delattr__', '__delitem__',</span></span><br><span class="line"><span class="comment"># '__delslice__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__',</span></span><br><span class="line"><span class="comment"># '__getitem__', '__getslice__', '__gt__', '__hash__', '__iadd__', '__imul__',</span></span><br><span class="line"><span class="comment"># '__init__', '__iter__', '__le__', '__len__', '__lt__', '__mul__', '__ne__',</span></span><br><span class="line"><span class="comment"># '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__reversed__', '__rmul__',</span></span><br><span class="line"><span class="comment"># '__setattr__', '__setitem__', '__setslice__', '__sizeof__', '__str__',</span></span><br><span class="line"><span class="comment"># '__subclasshook__', 'append', 'count', 'extend', 'index', 'insert', 'pop',</span></span><br><span class="line"><span class="comment"># 'remove', 'reverse', 'sort']</span></span><br></pre></td></tr></table></figure>
+<p>当无法回忆起方法名时，这将非常方便。如果我们不带任何参数运行<code>dir()</code>，那么它将返回current scope内的所有名称。</p>
+<h3 id="type-id">type &amp; id</h3>
+<p><code>type</code>函数返回对象的类型。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">print(type(<span class="string">''</span>))</span><br><span class="line"><span class="comment"># Output: &lt;type 'str'&gt;</span></span><br><span class="line"></span><br><span class="line">print(type([]))</span><br><span class="line"><span class="comment"># Output: &lt;type 'list'&gt;</span></span><br><span class="line"></span><br><span class="line">print(type(&#123;&#125;))</span><br><span class="line"><span class="comment"># Output: &lt;type 'dict'&gt;</span></span><br><span class="line"></span><br><span class="line">print(type(dict))</span><br><span class="line"><span class="comment"># Output: &lt;type 'type'&gt;</span></span><br><span class="line"></span><br><span class="line">print(type(<span class="number">3</span>))</span><br><span class="line"><span class="comment"># Output: &lt;type 'int'&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>id</code>返回对象的唯一id值。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">name = <span class="string">"Yasoob"</span></span><br><span class="line">print(id(name))</span><br><span class="line"><span class="comment"># Output: 139972439030304</span></span><br></pre></td></tr></table></figure>
+<h3 id="methods-for-code-introspection">Methods for Code Introspection</h3>
+<table>
+<colgroup>
+<col style="width: 21%">
+<col style="width: 78%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>help()</strong></td>
+<td>It is used it to find what other functions do</td>
+</tr>
+<tr class="even">
+<td><strong>hasattr()</strong></td>
+<td>Checks if an object has an attribute</td>
+</tr>
+<tr class="odd">
+<td><strong>getattr()</strong></td>
+<td>Returns the contents of an attribute if there are some.</td>
+</tr>
+<tr class="even">
+<td><strong>repr()</strong></td>
+<td>Return string representation of object</td>
+</tr>
+<tr class="odd">
+<td><strong>callable()</strong></td>
+<td>Checks if an object is a callable object (a function)or not.</td>
+</tr>
+<tr class="even">
+<td><strong>issubclass()</strong></td>
+<td>Checks if a specific class is a derived class of another class.</td>
+</tr>
+<tr class="odd">
+<td><strong>isinstance()</strong></td>
+<td>Checks if an objects is an instance of a specific class.</td>
+</tr>
+<tr class="even">
+<td><strong>sys()</strong></td>
+<td>Give access to system specific variables and functions</td>
+</tr>
+<tr class="odd">
+<td><strong><strong>doc</strong></strong></td>
+<td>Return some documentation about an object</td>
+</tr>
+<tr class="even">
+<td><strong><strong>name</strong></strong></td>
+<td>Return the name of the object.</td>
+</tr>
+</tbody>
+</table>
+]]></content>
+      <categories>
+        <category>Python</category>
+      </categories>
+      <tags>
+        <tag>introspection</tag>
+      </tags>
+  </entry>
+</search>
