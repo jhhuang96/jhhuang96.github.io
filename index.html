@@ -426,7 +426,10 @@ a=w^Tx
 p(y|x)=p_1^yp_0^{1-y}
 \]</span></p>
 <p>其中 ，</p>
-<p><span class="math display">\[{p_1} = P\left( {y = 1|x} \right) = Sigmoid\left( { {w^T}x} \right) = \frac{1}{ {1 + {e^{ - {w^T}x}}}} , {p_0} = P\left( {y = 0|x} \right) = 1 - P(y = 1|x) = 1 - \frac{1}{ {1 + {e^{ - {w^T}x}}}}\]</span>。</p>
+<p><span class="math display">\[
+{p_1} = P\left( {y = 1|x} \right) = Sigmoid\left( { {w^T}x} \right) = \frac{1}{ {1 + {e^{ - {w^T}x}}}}  \\
+{p_0} = P\left( {y = 0|x} \right) = 1 - P(y = 1|x) = 1 - \frac{1}{ {1 + {e^{ - {w^T}x}}}}
+\]</span></p>
 <p>那么对于 <span class="math inline">\(N\)</span> 次独立同分布的观测 log-MLE为： <span class="math display">\[
 \begin{align*}
 \hat{w}=\mathop{argmax}_wJ(w)&amp;=\mathop{argmax}_w \log P\left( {Y|X} \right)   \\
