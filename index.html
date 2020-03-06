@@ -314,7 +314,7 @@
         
           
             <h1 id="线性分类">线性分类</h1>
-<p>​ 对于分类任务，线性回归模型就无能为力了，但是我们可以在线性模型的函数进行后再加入一层激活函数，这个函数是非线性的，激活函数的反函数叫做链接(Link)函数。我们有两种线性分类的方式：</p>
+<p>对于分类任务，线性回归模型就无能为力了，但是我们可以在线性模型的函数进行后再加入一层激活函数，这个函数是非线性的，激活函数的反函数叫做链接(Link)函数。我们有两种线性分类的方式：</p>
 <ol type="1">
 <li>硬分类，我们直接需要输出观测对应的分类。这类模型的代表为：
 <ul>
@@ -332,7 +332,7 @@
 </ul></li>
 </ol>
 <h2 id="硬分类-感知机">硬分类-感知机</h2>
-<p>​ 假设输入空间<span class="math inline">\(\mathcal{X} \subseteq \mathbb{R}^{p}\)</span>，输出空间<span class="math inline">\(\mathcal{Y} = \left\{+1, -1 \right\}\)</span>。输入<span class="math inline">\(x \in \mathcal{X}\)</span>表示实例的特征向量，对应于输入空间的点；输出<span class="math inline">\(y \in \mathcal{Y}\)</span>表示实例的类别。由输入空间到输出空间的函数 <span class="math display">\[
+<p>假设输入空间<span class="math inline">\(\mathcal{X} \subseteq \mathbb{R}^{p}\)</span>，输出空间<span class="math inline">\(\mathcal{Y} = \left\{+1, -1 \right\}\)</span>。输入<span class="math inline">\(x \in \mathcal{X}\)</span>表示实例的特征向量，对应于输入空间的点；输出<span class="math inline">\(y \in \mathcal{Y}\)</span>表示实例的类别。由输入空间到输出空间的函数 <span class="math display">\[
 f \left( x \right) = sign \left( w \cdot x \right)
 \]</span> 称为感知机。其中，<span class="math inline">\(w\)</span>和<span class="math inline">\(b\)</span>为感知机模型参数，<span class="math inline">\(w \in \mathbb{R}^{p}\)</span>叫做权值或权值向量，<span class="math inline">\(w \cdot x\)</span>表示<span class="math inline">\(w\)</span>和<span class="math inline">\(x\)</span>的内积。<span class="math inline">\(sign\)</span>是符号函数，即 <span class="math display">\[
 sign \left( x \right) = \left\{
@@ -342,13 +342,13 @@ sign \left( x \right) = \left\{
 \end{aligned}
 \right.
 \]</span></p>
-<p>​ 感知机是一种线性分类模型，属于<strong>判别模型</strong>。感知机模型的假设空间是定义在特征空间中的所有线性分类模型或线性分类器，即函数集合<span class="math inline">\(\left\{ f | f \left( x \right) = w \cdot x \right\}\)</span>。</p>
-<p>​ 感知机学习的目标是求得一个能够将训练集正实例点和负实例点完全正确分开的分离超平面。为了找出这样的超平面，即确定感知机模型参数<span class="math inline">\(w\)</span>，需要确定一个学习策略，即定义损失函数并将损失函数极小化。</p>
-<p>​ 损失函数的一个自然选择是误分类点的总数。但是，这样的损失函数不是参数<span class="math inline">\(w\)</span> 的连续可导函数，不易优化。损失函数的另一个选择是误分类点到超平面<span class="math inline">\(S\)</span> 的总距离，这是感知机所采用的。输入空间<span class="math inline">\(R^{n}\)</span>中的任一点<span class="math inline">\(x_{0}\)</span>到超平面<span class="math inline">\(S\)</span>的距离：</p>
+<p>感知机是一种线性分类模型，属于<strong>判别模型</strong>。感知机模型的假设空间是定义在特征空间中的所有线性分类模型或线性分类器，即函数集合<span class="math inline">\(\left\{ f | f \left( x \right) = w \cdot x \right\}\)</span>。</p>
+<p>感知机学习的目标是求得一个能够将训练集正实例点和负实例点完全正确分开的分离超平面。为了找出这样的超平面，即确定感知机模型参数<span class="math inline">\(w\)</span>，需要确定一个学习策略，即定义损失函数并将损失函数极小化。</p>
+<p>损失函数的一个自然选择是误分类点的总数。但是，这样的损失函数不是参数<span class="math inline">\(w\)</span> 的连续可导函数，不易优化。损失函数的另一个选择是误分类点到超平面<span class="math inline">\(S\)</span> 的总距离，这是感知机所采用的。输入空间<span class="math inline">\(R^{n}\)</span>中的任一点<span class="math inline">\(x_{0}\)</span>到超平面<span class="math inline">\(S\)</span>的距离：</p>
 <p><span class="math display">\[
 \dfrac{1}{\| w \|} \left| {w^T}  x_{0} \right|
 \]</span> 其中<span class="math inline">\(\| w \|\)</span>是<span class="math inline">\(w\)</span>的<span class="math inline">\(L_{2}\)</span>范数。</p>
-<p>​ 对于误分类数据<span class="math inline">\(\left( x_{i}, y_{i} \right)\)</span>，当<span class="math inline">\({w^T}x &gt; 0\)</span>时，<span class="math inline">\(y_{i}=-1\)</span>，当<span class="math inline">\({w^T} x &lt; 0\)</span>时，<span class="math inline">\(y_{i}=+1\)</span>，有 <span class="math display">\[
+<p>对于误分类数据<span class="math inline">\(\left( x_{i}, y_{i} \right)\)</span>，当<span class="math inline">\({w^T}x &gt; 0\)</span>时，<span class="math inline">\(y_{i}=-1\)</span>，当<span class="math inline">\({w^T} x &lt; 0\)</span>时，<span class="math inline">\(y_{i}=+1\)</span>，有 <span class="math display">\[
 -y_{i} \left( {w^T}x_{i} \right) &gt; 0
 \]</span> 误分类点<span class="math inline">\(x_{i}\)</span>到分离超平面的距离: <span class="math display">\[
 -\dfrac{1}{\| w \|} y_{i}\left({w^T} x_{i} \right)
@@ -358,7 +358,7 @@ sign \left( x \right) = \left\{
 \]</span> 不考虑<span class="math inline">\(\dfrac{1}{\| w \|}\)</span> ，就得到感知机学习的损失函数： <span class="math display">\[
 L(w)=\sum\limits_{ {x_{i} \in M}}-y_iw^Tx_i
 \]</span> 其中<span class="math inline">\(M\)</span> 为误分类点集合。</p>
-<p>​ 显然，损失函数<span class="math inline">\(L(w)\)</span> 是非负的。如果没有误分类点，损失函数值是0。而且，误分类点越少，误分类点离超平面越近，损失函数值就越小。实际在每一次训练的时候，我们采用梯度下降的算法。损失函数对 <span class="math inline">\(w\)</span> 的偏导为： <span class="math display">\[
+<p>显然，损失函数<span class="math inline">\(L(w)\)</span> 是非负的。如果没有误分类点，损失函数值是0。而且，误分类点越少，误分类点离超平面越近，损失函数值就越小。实际在每一次训练的时候，我们采用梯度下降的算法。损失函数对 <span class="math inline">\(w\)</span> 的偏导为： <span class="math display">\[
 \frac{\partial}{\partial w}L(w)=\sum\limits_{x_i\in\mathcal{D}_{wrong}}-y_ix_i
 \]</span> 但是如果样本非常多的情况下，计算复杂度较高，但是，实际上我们并不需要绝对的损失函数下降的方向，我们只需要损失函数的期望值下降，但是计算期望需要知道真实的概率分布，我们实际只能根据训练数据抽样来估算这个概率分布即经验风险（关于训练集的平均损失）： <span class="math display">\[
 \mathbb{E}_{\mathcal D}[\mathbb{E}_\hat{p}[\nabla_wL(w)]]=\mathbb{E}_{\mathcal D}[\frac{1}{N}\sum\limits_{i=1}^N\nabla_wL(w)]
@@ -366,7 +366,7 @@ L(w)=\sum\limits_{ {x_{i} \in M}}-y_iw^Tx_i
 w^{t+1}\leftarrow w^{t}+\lambda y_ix_i
 \]</span> 是可以收敛的，同时使用单个观测更新也可以在一定程度上增加不确定度，从而减轻陷入局部最小的可能。在更大规模的数据上，常用的是小批量随机梯度下降法。</p>
 <h2 id="硬分类-线性判别分析">硬分类-线性判别分析</h2>
-<p>​ 在 线性判别分析(LDA) 中，我们的基本想法是选定一个方向，将试验样本顺着这个方向投影，投影后的数据需要满足两个条件，从而可以更好地分类：</p>
+<p>在线性判别分析(LDA) 中，我们的基本想法是选定一个方向，将试验样本顺着这个方向投影，投影后的数据需要满足两个条件，从而可以更好地分类：</p>
 <ol type="1">
 <li>相同类内部的试验样本距离接近。</li>
 <li>不同类别之间的距离较大。</li>
@@ -549,8 +549,8 @@ p(y|x)=\frac{p(x|y)p(y)}{p(x)}=\frac{\prod\limits_{i=1}^pp(x_i|y)p(y)}{p(x)}
 </ol>
 <p>对这些参数的估计，常用 MLE 的方法直接在数据集上估计，由于不需要知道各个维度之间的关系，因此，所需数据量大大减少了。估算完这些参数，再代入贝叶斯定理中得到类别的后验分布。</p>
 <h2 id="小结">小结</h2>
-<p>​ 分类任务分为两类，对于需要直接输出类别的任务，感知机算法中我们在线性模型的基础上加入符号函数作为激活函数，那么就能得到这个类别，但是符号函数不光滑，于是我们采用错误驱动的方式，引入 <span class="math inline">\(\sum\limits_{x_i\in\mathcal{D}_{wrong}}-y_iw^Tx_i\)</span> 作为损失函数，然后最小化这个误差，采用批量随机梯度下降的方法来获取最佳的参数值。而在线性判别分析中，我们将线性模型看作是数据点在某一个方向的投影，采用类内小，类间大的思路来定义损失函数，其中类内小定义为两类数据的方差之和，类间大定义为两类数据中心点的间距，对损失函数求导得到参数的方向，这个方向就是 <span class="math inline">\(S_w^{-1}(\overline x_{c1}-\overline x_{c2})\)</span>，其中 <span class="math inline">\(S_w\)</span> 为原数据集两类的方差之和。</p>
-<p>​ 另一种任务是输出分类的概率，对于概率模型，我们有两种方案，第一种是<strong>判别模型</strong>，也就是直接对类别的条件概率建模，将线性模型套入 Logistic 函数中，我们就得到了 Logistic 回归模型，这里的概率解释是两类的联合概率比值的对数是线性的，我们定义的损失函数是交叉熵（等价于 MLE），对这个函数求导得到 <span class="math inline">\(\frac{1}{N}\sum\limits_{i=1}^N(y_i-p_1)x_i\)</span>，同样利用批量随机梯度（上升）的方法进行优化。第二种是<strong>生成模型</strong>，生成模型引入了类别的先验，在高斯判别分析中，我们对数据集的数据分布作出了假设，其中类先验是二项分布，而每一类的似然是高斯分布，对这个联合分布的对数似然进行最大化就得到了参数， <span class="math inline">\(\frac{\sum\limits_{i=1}^Ny_ix_i}{N_1},\frac{\sum\limits_{i=1}^N(1-y_i)x_i}{N_0},\frac{N_1S_1+N_2S_2}{N},\frac{N_1}{N}\)</span>。在朴素贝叶斯中，我们进一步对属性的各个维度之间的依赖关系作出假设，条件独立性假设大大减少了数据量的需求。</p>
+<p>分类任务分为两类，对于需要直接输出类别的任务，感知机算法中我们在线性模型的基础上加入符号函数作为激活函数，那么就能得到这个类别，但是符号函数不光滑，于是我们采用错误驱动的方式，引入 <span class="math inline">\(\sum\limits_{x_i\in\mathcal{D}_{wrong}}-y_iw^Tx_i\)</span> 作为损失函数，然后最小化这个误差，采用批量随机梯度下降的方法来获取最佳的参数值。而在线性判别分析中，我们将线性模型看作是数据点在某一个方向的投影，采用类内小，类间大的思路来定义损失函数，其中类内小定义为两类数据的方差之和，类间大定义为两类数据中心点的间距，对损失函数求导得到参数的方向，这个方向就是 <span class="math inline">\(S_w^{-1}(\overline x_{c1}-\overline x_{c2})\)</span>，其中 <span class="math inline">\(S_w\)</span> 为原数据集两类的方差之和。</p>
+<p>另一种任务是输出分类的概率，对于概率模型，我们有两种方案，第一种是<strong>判别模型</strong>，也就是直接对类别的条件概率建模，将线性模型套入 Logistic 函数中，我们就得到了 Logistic 回归模型，这里的概率解释是两类的联合概率比值的对数是线性的，我们定义的损失函数是交叉熵（等价于 MLE），对这个函数求导得到 <span class="math inline">\(\frac{1}{N}\sum\limits_{i=1}^N(y_i-p_1)x_i\)</span>，同样利用批量随机梯度（上升）的方法进行优化。第二种是<strong>生成模型</strong>，生成模型引入了类别的先验，在高斯判别分析中，我们对数据集的数据分布作出了假设，其中类先验是二项分布，而每一类的似然是高斯分布，对这个联合分布的对数似然进行最大化就得到了参数， <span class="math inline">\(\frac{\sum\limits_{i=1}^Ny_ix_i}{N_1},\frac{\sum\limits_{i=1}^N(1-y_i)x_i}{N_0},\frac{N_1S_1+N_2S_2}{N},\frac{N_1}{N}\)</span>。在朴素贝叶斯中，我们进一步对属性的各个维度之间的依赖关系作出假设，条件独立性假设大大减少了数据量的需求。</p>
 
           
         
