@@ -425,7 +425,8 @@ a=w^Tx
 <p>对于一次观测，获得分类 <span class="math inline">\(y\)</span> 的概率为（假定<span class="math inline">\(C_1=1,C_2=0\)</span>）： <span class="math display">\[
 p(y|x)=p_1^yp_0^{1-y}
 \]</span></p>
-<p>其中 <span class="math inline">\({p_1} = P\left( {y = 1|x} \right) = Sigmoid\left( { {w^T}x} \right) = \frac{1}{ {1 + {e^{ - {w^T}x}}}}\)</span> ，<span class="math inline">\({p_0} = P\left( {y = 0|x} \right) = 1 - P(y = 1|x) = 1 - \frac{1}{ {1 + {e^{ - {w^T}x}}}}\)</span> 。</p>
+<p>其中 ，</p>
+<p><span class="math inline">\({p_1} = P\left( {y = 1|x} \right) = Sigmoid\left( { {w^T}x} \right) = \frac{1}{ {1 + {e^{ - {w^T}x}}}}\)</span> , <span class="math inline">\({p_0} = P\left( {y = 0|x} \right) = 1 - P(y = 1|x) = 1 - \frac{1}{ {1 + {e^{ - {w^T}x}}}}\)</span> 。</p>
 <p>那么对于 <span class="math inline">\(N\)</span> 次独立同分布的观测 log-MLE为： <span class="math display">\[
 \begin{align*}
 \hat{w}=\mathop{argmax}_wJ(w)&amp;=\mathop{argmax}_w \log P\left( {Y|X} \right)   \\
