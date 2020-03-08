@@ -1,6 +1,235 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>降维</title>
+    <url>/2020/03/08/%E9%99%8D%E7%BB%B4/</url>
+    <content><![CDATA[<h1 id="降维">降维</h1>
+<p>我们知道，解决过拟合的问题除了正则化和添加数据之外，降维就是最好的方法。降维的思路来源于维度灾难的问题，我们知道 <span class="math inline">\(n\)</span> 维球的体积为： <span class="math display">\[
+CR^n
+\]</span> 那么在球体积与边长为 <span class="math inline">\(2R\)</span> 的超立方体比值为： <span class="math display">\[
+\lim\limits_{n\rightarrow0}\frac{CR^n}{2^nR^n}=0
+\]</span></p>
+<p>这就是所谓的维度灾难，在高维数据中，主要样本都分布在立方体的边缘，所以数据集更加稀疏。</p>
+<p>降维的算法分为：</p>
+<ol type="1">
+<li>直接降维，特征选择</li>
+<li>线性降维，PCA，MDS等</li>
+<li>分线性，流形包括 Isomap，LLE 等</li>
+</ol>
+<p>为了方便，我们首先写出样本均值矩阵以及样本协方差矩阵： <span class="math display">\[
+\bar X = \frac{1}{N}\sum\limits_{i = 1}^N { {x_i}}  = \frac{1}{N}\left( {\begin{array}{*{20}{c}}
+  { {x_1}}&amp; \cdots &amp;{ {x_N}} 
+\end{array}} \right)\left( {\begin{array}{*{20}{c}}
+  1 \\ 
+   \vdots  \\ 
+  1 
+\end{array}} \right) = \frac{1}{N}{X^T}{1_n}
+\]</span></p>
+<p><span class="math display">\[
+\begin{align*}
+S &amp;= \frac{1}{N}\sum\limits_{i = 1}^N {\left( { {x_i} - \bar x} \right)} \left( { {x_i} - \bar x} \right) \\
+&amp;=\frac{1}{N}\left( {\begin{array}{*{20}{c}}
+  { {x_1} - \bar x}&amp; \ldots &amp;{ {x_N} - \bar x} 
+\end{array}} \right){\left( {\begin{array}{*{20}{c}}
+  { {x_1} - \bar x}&amp; \ldots &amp;{ {x_N} - \bar x} 
+\end{array}} \right)^T} \\
+&amp;=\frac{1}{N}\left[ {\left( {\begin{array}{*{20}{c}}
+  { {x_1}}&amp; \ldots &amp;{ {x_N}} 
+\end{array}} \right) - \left( {\begin{array}{*{20}{c}}
+  {\bar x}&amp; \ldots &amp;{\bar x} 
+\end{array}} \right)} \right]{\left( {\begin{array}{*{20}{c}}
+  { {x_1} - \bar x}&amp; \ldots &amp;{ {x_N} - \bar x} 
+\end{array}} \right)^T} \\
+&amp;= \frac{1}{N}\left( { {X^T} - \bar X1_n^T} \right){\left( {\begin{array}{*{20}{c}}
+  { {x_1} - \bar x}&amp; \ldots &amp;{ {x_N} - \bar x} 
+\end{array}} \right)^T}\\
+&amp;= \frac{1}{N}\left( { {X^T} - \frac{1}{N}{X^T}{1_n}1_n^T} \right){\left( {\begin{array}{*{20}{c}}
+  { {x_1} - \bar x}&amp; \ldots &amp;{ {x_N} - \bar x} 
+\end{array}} \right)^T}\\
+&amp;= \frac{1}{N}{X^T}\left( { {I_n} - \frac{1}{N}{1_n}1_n^T} \right){\left( { {I_n} - \frac{1}{N}{1_n}1_n^T} \right)^T}X\\
+&amp;=\frac{1}{N}{X^T}H{H^T}X \\
+\end{align*}
+\]</span></p>
+<p>其中，<span class="math inline">\(H = \left( { {I_n} - \frac{1}{N}{1_n}1_n^T} \right)\)</span> ，且有性质<span class="math inline">\({H^T} = H = {H^2} = {H^n}\)</span> 。</p>
+<p>所以： <span class="math display">\[
+\begin{align*}
+S&amp;=\frac{1}{N}X^THH^TX\nonumber\\
+&amp;=\frac{1}{N}X^THHX=\frac{1}{N}X^THX
+\end{align*}
+\]</span> 这个式子利用了中心矩阵 $ H$的对称性，这也是一个投影矩阵。</p>
+<h2 id="主成分分析-pca">主成分分析 PCA</h2>
+<h3 id="损失函数">损失函数</h3>
+<p>主成分分析中，我们的基本想法是将所有数据投影到一个字空间中，从而达到降维的目标，为了寻找这个子空间，我们基本想法是：</p>
+<ol type="1">
+<li>所有数据在子空间中更为分散（最大投影方差）</li>
+<li>损失的信息最小，即：在补空间的分量少（最小重构距离）</li>
+</ol>
+<p>原来的数据很有可能各个维度之间是相关的，于是我们希望找到一组 <span class="math inline">\(p\)</span> 个新的线性无关的单位正交基 <span class="math inline">\(u_i\)</span>，降维就是取其中的 <span class="math inline">\(q\)</span> 个基。于是对于一个样本 <span class="math inline">\(x_i\)</span>，经过这个坐标变换后： <span class="math display">\[
+\hat{x_i}=\sum\limits_{i=1}^p({x_{_i}^T{u_i}})u_i=\sum\limits_{i=1}^q({x_{_i}^T{u_i}})u_i+\sum\limits_{i=q+1}^p({x_{_i}^T{u_i}})u_i
+\]</span></p>
+<h3 id="最大投影方差">最大投影方差</h3>
+<p>对于数据集来说，我们首先将其中心化然后再带入上面的式子的第一项，并使用其系数的平方平均作为损失函数并最大化： <span class="math display">\[
+\begin{align}
+J&amp;=\frac{1}{N}\sum\limits_{i=1}^N\sum\limits_{j=1}^q((x_i-\overline{x})^Tu_j)^2\nonumber\\
+&amp;= \frac{1}{N}{\sum\limits_{i = 1}^N {\sum\limits_{j = 1}^q {\left( { { {\left( { {x_i} - \bar x} \right)}^T}{u_j}} \right)} } ^T}{\left( { {x_i} - \bar x} \right)^T}{u_j}\\
+&amp;= \frac{1}{N}\sum\limits_{i = 1}^N {\sum\limits_{j = 1}^q { {u_j}^T\left( { {x_i} - \bar x} \right)} } {\left( { {x_i} - \bar x} \right)^T}{u_j}\\
+&amp;=\sum\limits_{j=1}^qu_j^TSu_j\ ,\ s.t.\ u_j^Tu_j=1
+\end{align}
+\]</span> 由于每个基都是线性无关的，于是每一个 <span class="math inline">\(u_j\)</span> 的求解可以分别进行，使用拉格朗日乘子法： <span class="math display">\[
+\mathop{argmax}_{u_j}L(u_j,\lambda)=\mathop{argmax}_{u_j}u_j^TSu_j-\lambda(u_j^Tu_j-1)
+\]</span> 于是将上式拉格朗日函数对<span class="math inline">\(u_j\)</span> 求导可得： <span class="math display">\[
+Su_j=\lambda u_j
+\]</span> 可见，我们需要的基就是协方差矩阵的特征向量。损失函数最大取在特征值前 <span class="math inline">\(q\)</span> 个最大值，所对应的特征向量即为主成分。</p>
+<h3 id="最小重构距离">最小重构距离</h3>
+<p>下面看其损失的信息最少（最小重构距离）这个条件，假设数据一共 <span class="math inline">\(p\)</span> 维，需要降维到 <span class="math inline">\(q\)</span> ，同样适用系数的平方平均作为损失函数（注意求和范围是从$q+1 $ 开始），并最小化： <span class="math display">\[
+{x_i} = \sum\limits_{j = 1}^q {\left( {x_i^T{u_j}} \right)\overrightarrow { {u_j}} }  = \sum\limits_{j = 1}^p {\left( {x_i^T{u_j}} \right)} {u_j} \\
+{\hat x_i} = \sum\limits_{j = 1}^q {\left( {x_i^T{u_j}} \right)} {u_j}
+\]</span></p>
+<p><span class="math display">\[
+\begin{align*}
+J&amp;=\frac{1}{N}{\sum\limits_{i = 1}^N {\left\| { {x_i} - { {\hat x}_i}} \right\|} ^2} = \frac{1}{N}{\sum\limits_{i = 1}^N {\left\| {\sum\limits_{j = q + 1}^p {\left( {x_i^T{u_j}} \right){u_j}} } \right\|} ^2} \\
+&amp;=\frac{1}{N}\sum\limits_{i=1}^N\sum\limits_{j=q+1}^p((x_i-\overline{x})^Tu_j)^2\nonumber\\
+&amp;=\sum\limits_{j=q+1}^pu_j^TSu_j\ ,\ s.t.\ u_j^Tu_j=1
+\end{align*}
+\]</span></p>
+<p>同样的： <span class="math display">\[
+\mathop{argmin}_{u_j}L(u_j,\lambda)=\mathop{argmin}_{u_j}u_j^TSu_j+\lambda(1-u_j^Tu_j)
+\]</span> 损失函数最小取在本征值剩下的最小的几个特征值。数据集的协方差矩阵可以写成 <span class="math inline">\(S=U\Lambda U^T\)</span> （对称矩阵的奇异值分解），直接对这个表达式当然可以得到特征向量和特征值。</p>
+<h3 id="svd-与-pcoa">SVD 与 PCoA</h3>
+<p>下面使用实际训练时常使用的 SVD（奇异值分解） 直接求得这个 <span class="math inline">\(q\)</span> 个特征向量。</p>
+<p>对中心化后的数据集即<span class="math inline">\(HX\)</span>进行奇异值分解： <span class="math display">\[
+HX=U\Sigma V^T,U^TU=I_N,V^TV=I_p,\Sigma:N\times p
+\]</span></p>
+<p>于是： <span class="math display">\[
+\begin{align*}
+S&amp;=\frac{1}{N}X^THX \\
+&amp;=\frac{1}{N}X^TH^THX \\
+&amp;=\frac{1}{N}{\left( {HX} \right)^T}HX \\
+&amp;= \frac{1}{N}V\Sigma^T {U^T}U\Sigma {V^T}\\
+&amp;=\frac{1}{N}V\Sigma^T\Sigma V^T \\
+&amp;= \frac{1}{N}V{\Sigma ^2}{V^T}
+\end{align*}
+\]</span> 因此，我们直接对中心化后的数据集进行 SVD，就可以得到特征值 <span class="math inline">\(\Sigma\)</span> 和特征向量 <span class="math inline">\(V\)</span>，在新坐标系中的坐标就是： <span class="math display">\[
+HX\cdot V
+\]</span> 由上面的推导，我们也可以得到另一种方法 PCoA(Principle Coordinate Analysis) 主坐标分析，定义并进行特征值分解： <span class="math display">\[
+\begin{align*}
+T&amp;=HXX^TH \\
+&amp;= U\Sigma {V^T}V\Sigma {U^T}\\
+&amp;=U\Sigma\Sigma^TU^T \\
+&amp;=U{\Sigma ^2}{U^T}
+\end{align*}
+\]</span> 由于： <span class="math display">\[
+\begin{align*}
+T(U\Sigma)&amp;=U{\Sigma ^2}{U^T}U\Sigma  \\
+&amp;=U\Sigma(\Sigma^2) \\
+\end{align*}
+\]</span> 于是可以直接得到坐标。这两种方法都可以得到主成分，但是由于方差矩阵是 <span class="math inline">\(p\times p\)</span> 的，而 <span class="math inline">\(T\)</span> 是 <span class="math inline">\(N\times N\)</span> 的，所以对样本量较少，维度<span class="math inline">\(p\)</span> 较大的时候可以采用 PCoA的方法。</p>
+<h3 id="p-pca">p-PCA</h3>
+<p>下面从概率的角度对 PCA 进行分析，概率方法也叫 p-PCA。我们使用线性模型（<span class="math inline">\(x\)</span> 与 <span class="math inline">\(z\)</span> 是线性关系），我们选定一个方向，对原数据 <span class="math inline">\(x\in\mathbb{R}^p\)</span> ，降维后的数据为 <span class="math inline">\(z\in\mathbb{R}^q,q&lt;p\)</span>。假设 <span class="math inline">\(z\)</span> 有一个先验，且 <span class="math inline">\(z\)</span> 与$ $ 相互独立： <span class="math display">\[
+\begin{align*}
+z&amp;\sim\mathcal{N}(\mathbb{O}_{q1},\mathbb{I}_{q*q})\\
+x&amp;=Wz+\mu+\varepsilon\\
+\varepsilon&amp;\sim\mathcal{N}(0,\sigma^2\mathbb{I}_{p*p}), \varepsilon \bot z\\
+\end{align*}
+\]</span> 对于这个模型，我么可以使用期望-最大（EM）的算法进行学习，在进行推断的时候需要求得 <span class="math inline">\(p(z|x)\)</span>，推断的求解过程和线性高斯模型类似。</p>
+<p>复习一下线性高斯模型中得到的结论：</p>
+<ol type="1">
+<li><p><span class="math inline">\(x_a=\begin{pmatrix}\mathbb{I}_{m\times m}&amp;\mathbb{O}_{m\times n}\end{pmatrix}\begin{pmatrix}x_a\\x_b\end{pmatrix}\)</span>，代入定理中得到： <span class="math display">\[
+\mathbb{E}[x_a]=\begin{pmatrix}\mathbb{I}&amp;\mathbb{O}\end{pmatrix}\begin{pmatrix}\mu_a\\\mu_b\end{pmatrix}=\mu_a\\
+Var[x_a]=\begin{pmatrix}\mathbb{I}&amp;\mathbb{O}\end{pmatrix}\begin{pmatrix}\Sigma_{aa}&amp;\Sigma_{ab}\\\Sigma_{ba}&amp;\Sigma_{bb}\end{pmatrix}\begin{pmatrix}\mathbb{I}\\\mathbb{O}\end{pmatrix}=\Sigma_{aa}
+\]</span> 所以 <span class="math inline">\(x_a\sim\mathcal{N}(\mu_a,\Sigma_{aa})\)</span>。</p></li>
+<li><p>同样的，<span class="math inline">\(x_b\sim\mathcal{N}(\mu_b,\Sigma_{bb})\)</span>。</p></li>
+<li><p>对于两个条件概率，我们引入三个量： <span class="math display">\[
+x_{b\cdot a}=x_b-\Sigma_{ba}\Sigma_{aa}^{-1}x_a\\
+\mu_{b\cdot a}=\mu_b-\Sigma_{ba}\Sigma_{aa}^{-1}\mu_a\\
+\Sigma_{bb\cdot a}=\Sigma_{bb}-\Sigma_{ba}\Sigma_{aa}^{-1}\Sigma_{ab}
+\]</span> 特别的，最后一个式子叫做 <span class="math inline">\(\Sigma_{bb}\)</span> 的 Schur Complementary。可以看到： <span class="math display">\[
+x_{b\cdot a}=\begin{pmatrix}-\Sigma_{ba}\Sigma_{aa}^{-1}&amp;\mathbb{I}_{n\times n}\end{pmatrix}\begin{pmatrix}x_a\\x_b\end{pmatrix}
+\]</span> 所以： <span class="math display">\[
+\mathbb{E}[x_{b\cdot a}]=\begin{pmatrix}-\Sigma_{ba}\Sigma_{aa}^{-1}&amp;\mathbb{I}_{n\times n}\end{pmatrix}\begin{pmatrix}\mu_a\\\mu_b\end{pmatrix}=\mu_{b\cdot a}\\
+Var[x_{b\cdot a}]=\begin{pmatrix}-\Sigma_{ba}\Sigma_{aa}^{-1}&amp;\mathbb{I}_{n\times n}\end{pmatrix}\begin{pmatrix}\Sigma_{aa}&amp;\Sigma_{ab}\\\Sigma_{ba}&amp;\Sigma_{bb}\end{pmatrix}\begin{pmatrix}-\Sigma_{aa}^{-1}\Sigma_{ba}^T\\\mathbb{I}_{n\times n}\end{pmatrix}=\Sigma_{bb\cdot a}
+\]</span> 利用这三个量可以得到 <span class="math inline">\(x_b=x_{b\cdot a}+\Sigma_{ba}\Sigma_{aa}^{-1}x_a\)</span>。因此： <span class="math display">\[
+\begin{align*}
+\mathbb{E}[x_b|x_a]&amp;=\mathbb{E}[x_{b\cdot a}] + \Sigma_{ba}\Sigma_{aa}^{-1}x_a\\
+&amp;=\mu_{b\cdot a}+\Sigma_{ba}\Sigma_{aa}^{-1}x_a  \\
+&amp;=\mu_b-\Sigma_{ba}\Sigma_{aa}^{-1}\mu_a+\Sigma_{ba}\Sigma_{aa}^{-1}x_a \\
+&amp;= {\mu _b}{\text{ + }}{\Sigma _{ba}}\Sigma _{aa}^{ - 1}\left( { {x_a}{-}{\mu _a}} \right)
+\end{align*}
+\]</span></p>
+<p><span class="math display">\[
+Var[x_b|x_a]=Var[x_{b \cdot a}]=\Sigma_{bb\cdot a}
+\]</span></p>
+<p>这里同样用到了定理。</p></li>
+<li><p>同样： <span class="math display">\[
+x_{a\cdot b}=x_a-\Sigma_{ab}\Sigma_{bb}^{-1}x_b\\
+\mu_{a\cdot b}=\mu_a-\Sigma_{ab}\Sigma_{bb}^{-1}\mu_b\\
+\Sigma_{aa\cdot b}=\Sigma_{aa}-\Sigma_{ab}\Sigma_{bb}^{-1}\Sigma_{ba}
+\]</span> 所以： <span class="math display">\[
+\begin{align*}
+\mathbb{E}[x_a|x_b]&amp;=\mathbb{E}[x_{a\cdot b}] + \Sigma_{ab}\Sigma_{bb}^{-1}x_b \\
+&amp;=\mu_{a\cdot b}+\Sigma_{ab}\Sigma_{bb}^{-1}x_b \\
+&amp;=\mu_a-\Sigma_{ab}\Sigma_{bb}^{-1}\mu_b+\Sigma_{ab}\Sigma_{bb}^{-1}x_b\\
+&amp;={\mu _a}{\text{ + }}{\Sigma _{ab}}\Sigma _{bb}^{ - 1}\left( { {x_b}{-}{\mu _b}} \right)
+\end{align*}
+\]</span></p>
+<p><span class="math display">\[
+Var[x_a|x_b]=\Sigma_{aa\cdot b}
+\]</span></p></li>
+</ol>
+<p>下面利用上边四个量，求解线性模型： <span class="math display">\[
+\begin{align}
+&amp;p(z|x)=\frac{p(x|z)p(z)}{p(x)}\\
+&amp;\mathbb{E}[x|z]=\mathbb{E}[wz+\mu + \varepsilon]=wz+\mu\\
+&amp;Var[x|z]=Var[wz+\mu + \varepsilon]=Var[\varepsilon]=\sigma^2\mathbb{I}_{p*p}\\
+&amp;\mathbb{E}[x]=\mathbb{E}[Wz+\mu+\varepsilon]=\mathbb{E}[wz+\mu]+\mathbb{E}[\varepsilon]=w*0+\mu+0=\mu\\
+&amp;Var[x]=Var[Wz+\mu+\varepsilon]=Var[Wz+\mu]+Var[\varepsilon]=W\mathbb{I}_{q*q}W^T+\sigma^2\mathbb{I}_{p*p}=WW^T+\sigma^2\mathbb{I}_{p*p}\\
+\end{align}
+\]</span></p>
+<p>所以<span class="math inline">\(x \sim \mathcal{N}\left( {\mu ,W{W^T} + {\sigma ^2}{\mathbb{I}_{p*p}}} \right)\)</span> 。</p>
+<p>接着，为了套线性高斯模型公式，我们构造： <span class="math display">\[
+\left( {\begin{array}{*{20}{c}}
+  x \\ 
+  z 
+\end{array}} \right) \sim \mathcal{N}\left( {\left[ {\begin{array}{*{20}{c}}
+  \mu  \\ 
+  0 
+\end{array}} \right],\left[ {\begin{array}{*{20}{c}}
+  {W{W^T} + {\sigma ^2}\mathbb{I}_{p*p}}&amp;{Cov(x,z)} \\ 
+  {Cov(z,x)}&amp;\mathbb{I}_{q*q} 
+\end{array}} \right]} \right)
+\]</span></p>
+<p><span class="math display">\[
+\begin{align*}
+Cov(x,z) &amp;= Cov(z,x) = \mathbb{E}\left[ {\left( {x - \mu } \right){ {\left( {z - 0} \right)}^T}} \right]\\
+&amp;=\mathbb{E}\left[ {\left( {x - \mu } \right){z^T}} \right] = \mathbb{E}\left[ {\left( {Wz + \mu  + \varepsilon  - \mu } \right){z^T}} \right] \\
+&amp;= \mathbb{E}\left[ {\left( {Wz + \varepsilon } \right){z^T}} \right] = \mathbb{E}\left[ {Wz{z^T} + \varepsilon {z^T}} \right]\\
+&amp;=\mathbb{E}\left[ {Wz{z^T}} \right] + \mathbb{E}\left[ \varepsilon  \right] \times \mathbb{E}\left[ { {z^T}} \right]\\
+&amp;=W\mathbb{E}\left[ {\left( {z - 0} \right){ {(z - 0)}^T}} \right] + 0 \times \mathbb{E}\left[ { {z^T}} \right]\\
+&amp;=WVar\left[ z \right] = W{\mathbb{I}_{q*q}} = W
+\end{align*}
+\]</span></p>
+<p>所以，代入线性高斯模型： <span class="math display">\[
+\begin{align*}
+&amp;{\mu _a} = \mu ,{\mu _b} = 0\\
+&amp;{\Sigma _{ab}} = {\Sigma _{ba}} = W,{\Sigma _{aa}} = W{W^T} + {\sigma ^2}{\mathbb{I}_{p*p}},{\Sigma _{bb}} = {\mathbb{I}_{q*q}}\\
+&amp;{\Sigma _{bb \cdot a}} = {\Sigma _{bb}} - {\Sigma _{ba}}\Sigma _{aa}^{ - 1}{\Sigma _{ab}} = {\mathbb{I}_{q*q}} - W{\left( {W{W^T} + {\sigma ^2}} \right)^{ - 1}}W
+\end{align*}
+\]</span> 最终： <span class="math display">\[
+\begin{align*}
+\because 
+&amp;\mathbb{E}[x_b|x_a]={\mu _b}{\text{ + }}{\Sigma _{ba}}\Sigma _{aa}^{ - 1}\left( { {x_a}{-}{\mu _a}} \right) \\
+&amp; Var[x_b|x_a]=\Sigma_{bb\cdot a}\\
+\therefore &amp;z|x;W,\mu ,{\sigma ^2} \sim \mathcal{N}(W{(W{W^T} + {\sigma ^2}{\mathbb{I}_{p*p}})^{ - 1}}(x - \mu ),{\mathbb{I}_{q*q}} - W{(W{W^T} + {\sigma ^2}{\mathbb{I}_{p*p}})^{ - 1}}W)
+\end{align*}
+\]</span> 现在已经根据联合分布求出条件分布，只要根据似然函数求出参数即可。</p>
+<h2 id="小结">小结</h2>
+<p>降维是解决维度灾难和过拟合的重要方法，除了直接的特征选择外，我们还可以采用算法的途径对特征进行筛选，线性的降维方法以 PCA 为代表，在 PCA 中，我们只要直接对数据矩阵进行中心化然后求奇异值分解或者对数据的协方差矩阵进行分解就可以得到其主要维度。非线性学习的方法如流形学习将投影面从平面改为超曲面。</p>
+]]></content>
+      <categories>
+        <category>Machine Learning</category>
+      </categories>
+  </entry>
+  <entry>
     <title>线性分类</title>
     <url>/2020/03/06/%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB/</url>
     <content><![CDATA[<h1 id="线性分类">线性分类</h1>
