@@ -585,7 +585,7 @@ J\left( w \right) &amp;= L(w) + \lambda {w^T}w \nonumber\\
 &amp;\longrightarrow \hat{w}=(X^TX+\lambda \mathbb{I})^{-1}X^TY \nonumber
 \end{align}
 \]</span></p>
-<p>可以看到，利用2范数进行正则化不仅可以使模型选择 <span class="math inline">\(w\)</span> 较小的参数，同时也避免 $ X<sup>TX<span class="math inline">\(不可逆的问题。因为半正定\)</span>{X</sup>T}X$ 加上对角矩阵一定是正定矩阵，即一定可逆。</p>
+<p>可以看到，利用2范数进行正则化不仅可以使模型选择 <span class="math inline">\(w\)</span> 较小的参数，同时也避免 <span class="math inline">\(X^TX\)</span> 不可逆的问题。因为半正定 <span class="math inline">\({X^T}X\)</span> 加上对角矩阵一定是正定矩阵，即一定可逆。</p>
 <h2 id="贝叶斯角度下的线性回归">贝叶斯角度下的线性回归</h2>
 <p>从贝叶斯角度来看，我们将<span class="math inline">\(w\)</span> 看作一个先验，取先验分布 <span class="math inline">\(w\sim\mathcal{N}(0,\sigma_0^2)\)</span>。</p>
 <p>又因为：</p>
