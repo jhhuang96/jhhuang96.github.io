@@ -485,12 +485,7 @@
 <p>标准化后进行梯度下降时，每一步梯度的方向都几乎<strong>指向</strong>最小值（等高线中心点）的方向，迭代次数较少。</p>
 <ul>
 <li><p>所有<strong>依赖于样本距离</strong>的算法对于数据的数量级都非常<strong>敏感</strong>。</p>
-<p>如<span class="math inline">\(k\)</span>近邻算法需要计算距离当前样本最近的<span class="math inline">\(k\)</span>个样本。当属性的量级不同时，选取的最近的 <span class="math inline">\(k\)</span>个样本也会不同。</p>
-<center>
-<figure>
-<img src="/2020/03/31/%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86/standardization.jpg" alt><figcaption>standardization</figcaption>
-</figure>
-</center></li>
+<p>如<span class="math inline">\(k\)</span>近邻算法需要计算距离当前样本最近的<span class="math inline">\(k\)</span>个样本。当属性的量级不同时，选取的最近的 <span class="math inline">\(k\)</span>个样本也会不同。 <img src="/2020/03/31/%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86/standardization.jpg"></p></li>
 </ul></li>
 </ul></li>
 <li><p>设数据集 <span class="math inline">\(D=\left\{\left(\overrightarrow{\mathbf{x} }_{1}, \tilde{y}_{1}\right),\left(\overrightarrow{\mathbf{x} }_{2}, \tilde{y}_{2}\right), \cdots,\left(\overrightarrow{\mathbf{x} }_{N}, \tilde{y}_{N}\right)\right\}, \overrightarrow{\mathbf{x} }_{i}=\left(x_{i, 1}, \cdots, x_{i, n}\right)^{T}\)</span> 。常用的标准化算法有：</p>
