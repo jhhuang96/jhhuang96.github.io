@@ -220,6 +220,481 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/31/%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Holmes">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Holmes's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/03/31/%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86/" itemprop="url">数据预处理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-31T13:45:37+08:00">
+                2020-03-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Machine-Learning/" itemprop="url" rel="index">
+                    <span itemprop="name">Machine Learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <ol type="1">
+<li><p>在获取的数据中经常会遇到唯一属性，这些属性通常是人为添加的一些id属性，如存放在数据库中的自增的主键。</p>
+<p>对于这些属性，它并不能刻画样本自身的分布规律。所以只需要简单的删除这些属性。</p></li>
+<li><p>对于数据中的某个属性，如果其方差很小，则意味着其识别能力较弱。极端情况下其方差为0，这意味着该属性在所有样本上的值都是恒定的。</p>
+<p>因此可以设定一个阈值（如<span class="math inline">\(10^{-3}\)</span> ），将方差小于该阈值的属性直接剔除。</p></li>
+</ol>
+<h2 id="一缺失值处理">一、缺失值处理</h2>
+<p>缺失值的处理有三种方法：</p>
+<ul>
+<li><p><strong>直接使用</strong>含有缺失值的数据。</p>
+<p>某些算法可以直接使用含有缺失值的情况，如<strong>决策树</strong>算法可以直接使用含有缺失值的数据。</p>
+<ul>
+<li>优点：直接使用原始数据，排除了人工处理缺失值带来的信息损失。</li>
+<li>缺点：只有少量的算法支持这种方式。</li>
+</ul></li>
+<li><p><strong>删除</strong>含有缺失值的数据。</p>
+<p>最简单的办法就是删除含有缺失值的样本。</p>
+<ul>
+<li><p>优点：简单、高效。</p></li>
+<li><p>缺点：如果样本中的缺失值较少，则直接丢弃样本会损失大量的有效信息。这是对信息的极大浪费。</p>
+<blockquote>
+<p>如果样本中包含大量的缺失值，只有少量的有效值，则该方法可以接受。</p>
+</blockquote></li>
+</ul></li>
+<li><p>缺失值<strong>补全</strong>。</p>
+<p>用最可能的值来<strong>插补</strong>缺失值。这也是在实际工程中应用最广泛的技术。</p>
+<ul>
+<li>优点：保留了原始数据</li>
+<li>缺点：计算复杂，而且当插补的值估计不准确时，会对后续的模型引入额外的误差。</li>
+</ul></li>
+</ul>
+<p>缺失值补全常见有以下方法：</p>
+<ul>
+<li><p><strong>均值插补</strong></p></li>
+<li><p>同类均值插补</p></li>
+<li><p>建模预测</p></li>
+<li><p>高维映射</p></li>
+<li><p>多重插补</p></li>
+<li><p>压缩感知及矩阵补全</p></li>
+</ul>
+<h3 id="均值插补-同类均值插补">1.1 均值插补 &amp; 同类均值插补</h3>
+<ol type="1">
+<li><p>均值插补：</p>
+<ul>
+<li>如果样本的属性是<strong>连续值</strong>，则该属性的缺失值就以该属性有效值的<strong>平均值</strong>来插补。</li>
+<li>如果样本的属性是<strong>离散值</strong>，则该属性的缺失值就以该属性有效值的<strong>众数</strong>（出现频率最高的值）来插补。</li>
+</ul></li>
+<li><p>均值插补在含有缺失值的属性上的所有缺失值都填补为同一个值。</p>
+<p>而<strong>同类均值插补</strong>首先将样本进行<strong>分类</strong>，然后以<strong>该类</strong>中的样本的均值来插补缺失值。</p></li>
+</ol>
+<h3 id="建模预测">1.2 建模预测</h3>
+<ol type="1">
+<li><p>建模预测的思想是：将缺失的属性作为预测目标，通过建立模型来预测。</p></li>
+<li><p>给定数据集<span class="math inline">\(\mathbb{D}=\left\{\left(\overrightarrow{\mathbf{x} }_{1}, \tilde{y}_{1}\right),\left(\overrightarrow{\mathbf{x} }_{2}, \tilde{y}_{2}\right), \cdots,\left(\overrightarrow{\mathbf{x} }_{N}, \tilde{y}_{N}\right)\right\}\)</span> 。</p>
+<p>假设属性<span class="math inline">\(j\)</span>含有缺失值，根据<span class="math inline">\(x_{i,j}\)</span>是否缺失，将数据集划分为：</p>
+<ul>
+<li><span class="math inline">\(\mathbb{D}_{1}=\left\{\overrightarrow{\mathbf{x} }_{i} | x_{i, j} \neq n u l l\right\}\)</span> : 属性 <span class="math inline">\(j\)</span> <strong>有效</strong>的样本的集合。</li>
+<li><span class="math inline">\(\mathbb{D}_{2}=\left\{\overrightarrow{\mathbf{x} }_{i} | x_{i, j} = n u l l\right\}\)</span> : 属性 <span class="math inline">\(j\)</span> <strong>缺失</strong>的样本的集合。</li>
+</ul>
+<p>将 <span class="math inline">\(\mathbb{D}_{1}\)</span> 中的样本作为新的训练集，标签值重新定义为属性 <span class="math inline">\(j\)</span> 的值，通过建模来完成属性 <span class="math inline">\(j\)</span> 的学习。将 <span class="math inline">\(\mathbb{D}_{2}\)</span> 中的样本作为测试集，通过学得的模型来预测其属性 <span class="math inline">\(j\)</span> 的值。</p></li>
+<li><p>这种方法的效果相对较好，但是该方法有个根本缺陷：</p>
+<ul>
+<li>如果其他属性和属性 <span class="math inline">\(j\)</span> 无关，则预测的结果无意义。</li>
+<li>如果预测结果相当准确，则又说明属性 <span class="math inline">\(j\)</span> 可以由其它属性计算得到， 于是属性 <span class="math inline">\(j\)</span> 信息冗余，没有必要纳入数据集中。</li>
+</ul>
+<p>一般的情况是介于两者之间。</p></li>
+</ol>
+<h3 id="高维映射">1.3 高维映射</h3>
+<ol type="1">
+<li>高维映射的思想是：将属性映射到高维空间。</li>
+<li>给定数据集<span class="math inline">\(\mathbb{D}\)</span>，假设属性 <span class="math inline">\(j\)</span> 的取值为离散值<span class="math inline">\({a_1,a_2,...,a_K}\)</span>一共<span class="math inline">\(K\)</span>个值，则将该属性扩展为<span class="math inline">\(K+1\)</span>个属性<span class="math inline">\((j_1,j_2,...,j_{K+1})\)</span>，其中：
+<ul>
+<li>若样本在属性 <span class="math inline">\(j\)</span> 上的取值为<span class="math inline">\(a_k\)</span>，则样本在新的属性<span class="math inline">\(j_k\)</span>上的取值为 1，在新的属性<span class="math inline">\(j_1,...,j_{k-1},j_{k+1},...,j_{K+1}\)</span>上的取值为 0 。</li>
+<li>若样本在属性 <span class="math inline">\(j\)</span> 上缺失，则样本的新的属性<span class="math inline">\(J_{K+1}\)</span>上的取值为 1,在新的属性<span class="math inline">\(j_1,...,j_K\)</span>上取值为 0 。</li>
+</ul></li>
+<li>对于连续特征，高维映射无法直接处理。可以在连续特征离散化之后，再进行高维映射。</li>
+<li>高维映射是最精确的做法，它完全保留了所有的信息，也未增加任何额外的信息。比如广告的<code>CTR</code>预估模型，预处理时会把所有变量都这样处理，达到几亿维。
+<ul>
+<li>优点：完整保留了原始数据的全部信息。</li>
+<li>缺点：计算量大大提升。而且只有在样本量非常大的时候效果才好，否则会因为过于稀疏，效果很差。</li>
+</ul></li>
+</ol>
+<h2 id="二特征编码">二、特征编码</h2>
+<h3 id="特征二元化">2.1. 特征二元化</h3>
+<ol type="1">
+<li>特征二元化的过程是将<strong>数值型</strong>的属性转换为<strong>布尔值</strong>的属性。通常用于假设属性取值为取值分布为<strong>伯努利分布</strong>的情形。</li>
+<li>特征二元化的算法比较简单。 对属性<span class="math inline">\(j\)</span>指定一个阈值<span class="math inline">\(\epsilon\)</span>。
+<ul>
+<li>如果样本在属性 <span class="math inline">\(j\)</span> 上的值大于等于 <span class="math inline">\(\epsilon\)</span> ，则二元化之后为 1 。</li>
+<li>如果样本在属性 <span class="math inline">\(j\)</span> 上的值小于 <span class="math inline">\(\epsilon\)</span> ，则二元化之后为 0 。</li>
+</ul></li>
+<li>阈值 <span class="math inline">\(\epsilon\)</span> 是一个超参数，其选取需要结合模型和具体的任务来选择。</li>
+</ol>
+<h3 id="one-hot">2.2. one-hot</h3>
+<ol type="1">
+<li><p>对于非数值属性，如<code>性别：[男，女]、国籍：[中国，美国，英国]</code>等等，可以构建一个到整数的映射。如<code>性别：[男，女]</code>属性中，将<code>男</code>映射为整数 1、<code>女</code>映射为整数 0。</p>
+<p>该方法的优点是简单。但是问题是，在这种处理方式中无序的属性被看成有序的。<code>男</code>和<code>女</code>无法比较大小，但是<code>1</code>和<code>0</code>有大小。</p>
+<p>解决的办法是采用独热码编码<code>One-Hot Encoding</code>。</p></li>
+<li><p><code>One-Hot Encoding</code>采用<code>N</code>位状态位来对<code>N</code>个可能的取值进行编码，每个取值都由独立的状态位来表示，并且在任意时刻只有其中的一位有效。</p></li>
+<li><p><code>One-Hot Encoding</code> 的优点：</p>
+<ul>
+<li>能够处理非数值属性。</li>
+<li>在一定程度上也<strong>扩充</strong>了特征。如<code>性别</code>是一个属性，经过独热码编码之后变成了<code>是否男</code> 和 <code>是否女</code> 两个属性。</li>
+<li>编码后的属性是<strong>稀疏</strong>的，存在大量的零元分量。</li>
+</ul>
+<p>缺点：当类别的数量很多时，特征空间会变得非常大。在这种情况下，一般可以用主成分分析(PCA)来<strong>减少维度</strong>。而且<strong>one-hot encoding + PCA</strong>这种组合在实际中也非常有用。</p></li>
+<li><p>在决策树模型中，并不推荐对离散特征进行<code>one-hot</code>。 主要有两个原因：</p>
+<ul>
+<li><p>产生样本切分不平衡的问题，此时切分增益会非常小。</p>
+<p>如：<code>国籍</code>这个离散特征经过独热码编码之后，会产生<code>是否中国、是否美国、是否英国、...</code> 等一系列特征。在这一系列特征上，只有少量样本为<code>1</code>，大量样本为<code>0</code>。</p>
+<p>这种划分的<strong>增益</strong>非常小，因为拆分之后：</p>
+<ul>
+<li>较小的那个拆分样本集，它占总样本的比例太小。无论增益多大，乘以该比例之后几乎可以忽略。</li>
+<li>较大的那个拆分样本集，它几乎就是原始的样本集，增益几乎为零。</li>
+</ul></li>
+<li><p>影响决策树的学习。</p>
+<p>决策树依赖的是数据的统计信息。而独热码编码会把数据切分到零散的小空间上。在这些零散的小空间上，统计信息是不准确的，学习效果变差。</p></li>
+</ul></li>
+</ol>
+<h3 id="离散化">2.3 离散化</h3>
+<ol type="1">
+<li>离散化用于将连续的数值属性转化为离散的数值属性。</li>
+<li>是否使用特征离散化，这背后是：使用“海量离散特征+简单模型”，还是“少量连续特征+复杂模型”。
+<ul>
+<li>对于线性模型，通常使用“海量离散特征+简单模型”。
+<ul>
+<li>优点：模型简单。</li>
+<li>缺点：特征工程比较困难。但是一旦有成功的经验就可以推广，并且可以很多人并行研究。</li>
+</ul></li>
+<li>对于非线性模型（如深度学习），通常使用“少量连续特征+复杂模型”。
+<ul>
+<li>优点是：不需要进行复杂的特征工程。</li>
+<li>缺点是：模型复杂。</li>
+</ul></li>
+</ul></li>
+</ol>
+<h4 id="特性">2.3.2 特性</h4>
+<ol type="1">
+<li><p>在工业界很少直接将连续值作为逻辑回归模型的特征输入，而是将连续特征离散化为一系列 0/1 的离散特征。</p>
+<p>其优势有：</p>
+<ul>
+<li><p>离散化之后得到的稀疏向量，内积乘法运算<strong>速度更快</strong>，计算结果方便存储。</p></li>
+<li><p>离散化之后的特征对于<strong>异常数据</strong>具有很强的<strong>鲁棒性</strong>。</p>
+<p>如：销售额作为特征，当销售额在 <code>[30,100)</code> 之间时，为1，否则为 0。如果未离散化，则一个异常值 10000 会给模型造成很大的干扰。由于其数值较大，它对权重的学习影响较大。</p></li>
+<li><p>逻辑回归属于广义线性模型，表达能力受限，只能描述线性关系。特征离散化之后，相当于引入了非线性（分段线性映射），<strong>提升模型的表达能力</strong>，增强拟合能力。</p></li>
+<li><p>离散化之后可以进行<strong>特征交叉</strong>。假设有连续特征 <span class="math inline">\(j\)</span> ，离散化为 <span class="math inline">\(N\)</span> 个 0/1 特征；连续特征 <span class="math inline">\(k\)</span> ，离散化为 <span class="math inline">\(M\)</span> 个 0/1 特征，则分别进行离散化之后引入了 <span class="math inline">\(M+N\)</span> 个特征。</p>
+<p>假设离散化时，并不是独立进行离散化，而是特征 <span class="math inline">\(j,k\)</span> 联合进行离散化，则可以得到<span class="math inline">\(M*N\)</span>个组合特征。这会进一步引入非线性，<strong>提高模型表达能力</strong>。</p></li>
+<li><p>离散化之后，模型会更<strong>稳定</strong>。</p>
+<p>如对销售额进行离散化，<code>[30,100)</code> 作为一个区间。当销售额在40左右浮动时，并不会影响它离散化后的特征的值。</p>
+<p>但是处于区间连接处的值要小心处理，另外如何划分区间也是需要仔细处理。</p></li>
+</ul></li>
+<li><p>特征离散化简化了逻辑回归模型，同时降低模型过拟合的风险。</p>
+<p>能够对抗过拟合的原因：经过特征离散化之后，模型<strong>不再拟合特征的具体值</strong>，而是<strong>拟合特征的某个概念</strong>。因此能够对抗数据的扰动，更具有鲁棒性。</p>
+<p>另外它使得模型要拟合的值大幅度降低，也<strong>降低了模型的复杂度</strong>。</p></li>
+</ol>
+<h2 id="三数据标准化正则化">三、数据标准化、正则化</h2>
+<h3 id="数据标准化">3.1. 数据标准化</h3>
+<ol type="1">
+<li><p>数据标准化是将样本的属性取值缩放到某个指定的范围。</p></li>
+<li><p>数据标准化的两个原因：</p>
+<ul>
+<li><p>某些算法要求样本数据的属性取值具有零均值和单位方差。</p></li>
+<li><p>样本不同属性具有不同量级时，<strong>消除数量级</strong>的影响。如下图所示为两个属性的目标函数的等高线。</p>
+<ul>
+<li><p>数量级的差异将导致量级较大的属性占据主导地位。</p>
+<p>从图中看到：如果样本的某个属性的量级特别巨大，将原本为椭圆的等高线压缩成直线，从而使得目标函数值仅依赖于该属性。</p></li>
+<li><p>数量级的差异将导致迭代<strong>收敛速度减慢</strong>。</p>
+<p>原始的特征进行梯度下降时，每一步梯度的方向会<strong>偏离</strong>最小值（等高线中心点）的方向，迭代次数较多，且学习率必须非常小，否则非常容易引起宽幅震荡。</p></li>
+</ul>
+<p>标准化后进行梯度下降时，每一步梯度的方向都几乎<strong>指向</strong>最小值（等高线中心点）的方向，迭代次数较少。</p>
+<ul>
+<li><p>所有<strong>依赖于样本距离</strong>的算法对于数据的数量级都非常<strong>敏感</strong>。</p>
+<p>如<span class="math inline">\(k\)</span>近邻算法需要计算距离当前样本最近的<span class="math inline">\(k\)</span>个样本。当属性的量级不同时，选取的最近的 <span class="math inline">\(k\)</span>个样本也会不同。</p></li>
+</ul></li>
+</ul>
+<figure>
+<img src="/2020/03/31/%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86/standardization.jpg" alt><figcaption>standardization</figcaption>
+</figure></li>
+<li><p>设数据集 <span class="math inline">\(D=\left\{\left(\overrightarrow{\mathbf{x} }_{1}, \tilde{y}_{1}\right),\left(\overrightarrow{\mathbf{x} }_{2}, \tilde{y}_{2}\right), \cdots,\left(\overrightarrow{\mathbf{x} }_{N}, \tilde{y}_{N}\right)\right\}, \overrightarrow{\mathbf{x} }_{i}=\left(x_{i, 1}, \cdots, x_{i, n}\right)^{T}\)</span> 。常用的标准化算法有：</p>
+<ul>
+<li><p><code>min-max</code>标准化：对于属性 ，设所有样本在属性 上的最大值为 ，最小值为 。则标准化后的属性值为： <span class="math display">\[
+\hat{x}_{i, j}=\frac{x_{i, j}-j_{\min } }{j_{\max }-j_{\min } }
+\]</span></p>
+<p>标准化之后，所有样本在属性 上的取值都在 <code>[0,1]</code> 之间。</p></li>
+<li><p><code>z-score</code>标准化：对于属性 <span class="math inline">\(j\)</span> ，设所有样本在属性 <span class="math inline">\(j\)</span> 上的均值为 <span class="math inline">\(\mu_j\)</span> ，方差为 <span class="math inline">\(\sigma_j\)</span> 。则标准化后的属性值为： <span class="math display">\[
+\hat{x}_{i, j}=\frac{x_{i, j}-\mu_j}{\sigma_j}
+\]</span></p>
+<p>标准化之后，样本集的所有属性的均值都为 0，标准差均为 1。</p></li>
+</ul></li>
+<li><p>注意：如果数据集分为训练集、验证集和测试集，则：训练集、验证集、测试集使用相同标准化参数，该参数的值都是从<strong>训练集</strong>中得到。</p>
+<ul>
+<li>如果使用<code>min-max</code> 标准化，则属性 <span class="math inline">\(j\)</span> 的标准化参数<span class="math inline">\(j_{max},j_{min}\)</span>,都是从训练集中计算得到。</li>
+<li>如果使用<code>z-score</code> 标准化，则属性<span class="math inline">\(j\)</span>的标准化参数<span class="math inline">\(\mu_j, \sigma_j\)</span>都是从训练集中计算得到。</li>
+</ul></li>
+</ol>
+<h2 id="四特征选择">四、特征选择</h2>
+<ol type="1">
+<li><p>对于一个学习任务，给定了属性集，其中某些属性可能对于学习来说是很关键的，但是有些属性可能就意义不大。</p>
+<ul>
+<li><p>对当前学习任务有用的属性称作相关特征<code>relevant feature</code> 。</p></li>
+<li><p>对当前学习任务没有用的属性称作无关特征<code>irrelevant feature</code> 。</p></li>
+</ul>
+<p>从给定的特征集合中选出相关特征子集的过程称作特征选择<code>feature selection</code>。</p></li>
+<li><p>特征选择可能会降低模型的预测能力。因为被剔除的特征中可能包含了有效的信息，抛弃了这部分信息会一定程度上降低预测准确率。</p>
+<p>这是计算复杂度和预测能力之间的折衷：</p>
+<ul>
+<li><p>如果保留尽可能多的特征，则模型的预测能力会有所提升，但是计算复杂度会上升。</p></li>
+<li><p>如果剔除尽可能多的特征，则模型的预测能力会有所下降，但是计算复杂度会下降。</p></li>
+</ul></li>
+<li><p>常见的特征选择方法大致可分为三类：过滤式<code>filter</code>、包裹式<code>wrapper</code>、嵌入式<code>embedding</code> 。</p></li>
+</ol>
+<h3 id="嵌入式选择">4.1 嵌入式选择</h3>
+<p>过滤方法与机器学习算法相互独立，而且不需要交叉验证，计算效率比较高，但是没有考虑机器学习算法的特点。包裹方法使用预先定义好的机器学习算法来评估特征子集的质量，需要很多次训练模型，计算效率很低。嵌入方法则将特征选择嵌入到模型的构建过程中，具有包裹方法与机器学习算法相结合的优点，而且具有过滤方法计算效率高的优点，嵌入式方法是实际应用中最常见的方法，弥补了前面两种方法的不足。</p>
+<ol type="1">
+<li><p>以线性回归模型为例。</p>
+<p>给定数据集<span class="math inline">\(D=\left\{\left(\overrightarrow{\mathbf{x} }_{1}, \tilde{y}_{1}\right),\left(\overrightarrow{\mathbf{x} }_{2}, \tilde{y}_{2}\right), \cdots,\left(\overrightarrow{\mathbf{x} }_{N}, \tilde{y}_{N}\right)\right\}, \tilde{y_i} \in \mathbb{R}\)</span> 。 以平方误差为损失函数，则优化目标为： <span class="math display">\[
+\min _{\overrightarrow{\mathbf{w} }} \sum_{i=1}^{N}\left(\tilde{y}_{i}-\overrightarrow{\mathbf{w} }^{T} \overrightarrow{\mathbf{x} }_{i}\right)^{2}
+\]</span></p>
+<ul>
+<li><p>如果使用<span class="math inline">\(L_2\)</span>范数正则化，则优化目标为： <span class="math display">\[
+\min _{\overrightarrow{\mathbf{w} }} \sum_{i=1}^{N}\left(\tilde{y}_{i}-\overrightarrow{\mathbf{w} }^{T} \overrightarrow{\mathbf{x} }_{i}\right)^{2}+\lambda\|\overrightarrow{\mathbf{w} }\|_{2}^{2}, \quad \lambda&gt;0
+\]</span> 此时称作岭回归<code>ridge regression</code> 。</p></li>
+<li><p>如果使用<span class="math inline">\(L_1\)</span>范数正则化，则优化目标为： <span class="math display">\[
+\min _{\overrightarrow{\mathbf{w} }} \sum_{i=1}^{N}\left(\tilde{y}_{i}-\overrightarrow{\mathbf{w} }^{T} \overrightarrow{\mathbf{x} }_{i}\right)^{2}+\lambda\|\overrightarrow{\mathbf{w} }\|_{1}, \quad \lambda&gt;0
+\]</span> 此时称作<code>LASSO:Least Absolute Shrinkage and Selection Operator</code> 回归。</p></li>
+</ul></li>
+<li><p>引入<span class="math inline">\(L_1\)</span>范数除了<strong>降低过拟合风险</strong>之外，还有一个好处：它求得的<span class="math inline">\(\overrightarrow{\mathbf{w} }\)</span>会有较多的分量为零。即：它更容易获得<strong>稀疏解</strong>。</p>
+<p>于是基于 <span class="math inline">\(L_1\)</span> 正则化的学习方法就是一种嵌入式特征选择方法，其特征选择过程与学习器训练过程融为一体，二者同时完成。</p></li>
+<li><p>常见的嵌入式选择模型：</p>
+<ul>
+<li><p>在<code>Lasso</code>中，<span class="math inline">\(\lambda\)</span> 参数控制了稀疏性：</p>
+<ul>
+<li><p>如果<span class="math inline">\(\lambda\)</span>越小，则稀疏性越小，则被选择的特征越多。</p></li>
+<li><p>如果<span class="math inline">\(\lambda\)</span>越大，则稀疏性越大，则被选择的特征越少。</p></li>
+</ul></li>
+<li><p>在<code>SVM</code>和<code>logistic-regression</code>中，参数<code>C</code>控制了稀疏性</p>
+<ul>
+<li><p>如果<code>C</code>越小，则稀疏性越大，则被选择的特征越少。</p></li>
+<li><p>如果<code>C</code>越大，则稀疏性越小，则被选择的特征越多。</p></li>
+</ul></li>
+</ul></li>
+<li><p>另外一种嵌入方法是基于<strong>树模型</strong>的特征选择方法。在决策树中，深度较浅的节点一般对应的特征分类能力更强（可以将更多的样本区分开）。对于基于决策树的算法，如随机森林，重要的特征更有可能出现在深度较浅的节点，而且出现的次数可能越多。因此，可以基于树模型中特征出现次数等指标对特征进行<strong>重要性排序</strong>。</p></li>
+</ol>
+<h2 id="五多类分类问题">五、多类分类问题</h2>
+<ol type="1">
+<li><p>某些算法原生的支持多分类，如：决策树、最近邻算法等。但是有些算法只能求解二分类问题，如：支持向量机。</p></li>
+<li><p>对于只能求解二分类问题的算法，一旦遇到问题是多类别的，那么可以将多分类问题<strong>拆解成二分类任务</strong>求解。</p>
+<p>即：</p>
+<ul>
+<li><p>先对原问题进行拆分，然后为拆出的每个二分类任务训练一个分类器。</p></li>
+<li><p>测试时，对这些二分类器的预测结果进行集成，从而获得最终的多分类结果。</p></li>
+</ul></li>
+<li><p>多分类问题有三种拆解方式：</p>
+<ul>
+<li><p>一对其余(<code>One-vs-rest:OvR</code>) 。</p></li>
+<li><p>一对一(<code>one-vs-one:OvO</code>) 。</p></li>
+<li><p>多对多(<code>many-vs-many:MvM</code>) 。</p></li>
+</ul></li>
+</ol>
+<h3 id="one-vs-rest">5.1 one vs rest</h3>
+<ol type="1">
+<li><p><strong>一对其余</strong>：为<strong>每一个类别</strong>训练一个分类器。</p>
+<p>假设类别为<span class="math inline">\(\{c_1,c_2,..,c_K\}\)</span>，则<strong>训练<span class="math inline">\(K\)</span>个分类器</strong> <span class="math inline">\(CLF_1,CLF_2,...,CLF_K\)</span>：</p>
+<ul>
+<li>训练<span class="math inline">\(CLF_i\)</span>时，将类别为 <span class="math inline">\(c_i\)</span> 的样本点定义为<strong>正类</strong>，将类别<strong>不是 <span class="math inline">\(c_i\)</span> </strong>的样本点定义为<strong>负类</strong>。</li>
+<li>训练<span class="math inline">\(CLF_i\)</span>不光需要给出预测结果是否属于类别 <span class="math inline">\(c_i\)</span> ，还要给出<strong>置信度</strong>。</li>
+</ul></li>
+<li><p>预测时，对于未知的实例，用训练出来的<span class="math inline">\(K\)</span>个分类器来预测。</p>
+<p>假设<strong>置信度最高</strong>的分类器为<span class="math inline">\(CLF_m\)</span>，则该实例的类别预测为 <span class="math inline">\(c_m\)</span> 。</p></li>
+<li><p>缺点：非常容易<strong>陷入样本不平衡</strong>。</p>
+<p>即使训练集中每一类样本都是平衡的，训练每个分类器时样本反而不平衡。</p></li>
+</ol>
+<h3 id="one-vs-one">5.2 one vs one</h3>
+<ol type="1">
+<li><p><strong>一对一</strong>：为<strong>每一对</strong>类别训练一个分类器。</p>
+<p>假设类别为<span class="math inline">\(\{c_1,c_2,..,c_K\}\)</span>。那么<strong>训练 <span class="math inline">\(C_K^2=\frac{K(K-1)}{2}\)</span>个分类器 </strong></p>
+<p><span class="math inline">\(CLF_{1,2},CLF_{1,3},...,CLF_{i,j},CLF_{K-1,K}\)</span>。</p>
+<p>其中，<span class="math inline">\(CLF_{i,j},i&lt;j\)</span> 分类器从原始训练集中<strong>提取类别为<span class="math inline">\(c_i,c_j\)</span>的样本点</strong>作为<strong>新的训练集</strong>，然后训练<span class="math inline">\(CLF_{i,j}\)</span> 。</p></li>
+<li><p>预测时，对于未知的实例，对预测结果进行<strong>投票</strong>。</p>
+<ul>
+<li>首先设投票结果为 <span class="math inline">\(s_0=0,s_1=0,..,s_K=0\)</span></li>
+<li>然后用每个分类器<span class="math inline">\(CLF_{i,j}\)</span>对未知实例进行预测：
+<ul>
+<li>若预测结果是类别<span class="math inline">\(c_i\)</span>，则 <span class="math inline">\(s_i+=1\)</span>。</li>
+<li>若预测结果是类别<span class="math inline">\(c_j\)</span>，则 <span class="math inline">\(s_j+=1\)</span>。</li>
+<li>最终假设<span class="math inline">\(c_m\)</span>最大，则该未知的实例分类为<span class="math inline">\(c_m\)</span>。</li>
+</ul></li>
+</ul></li>
+<li><p>缺点：需要训练的分类器数量为<span class="math inline">\(O(K^2)\)</span>，<strong>计算量太大</strong>。</p></li>
+</ol>
+<h3 id="many-vs-many">5.3 many vs many</h3>
+<ol type="1">
+<li><p>多对多：每次都将<strong>若干个类</strong>作为<strong>正类</strong>，<strong>若干个其他类</strong>作为<strong>反类</strong>。</p>
+<ul>
+<li>正、反类的构造必须有<strong>特殊的设计</strong>，不能随意选取。</li>
+<li>通常采用纠错输出码<code>Error Correcting Output Codes:ECOC</code>技术。该技术将编码的思想引入类别拆分，并尽可能在解码过程中具有容错性。</li>
+</ul></li>
+<li><p><code>ECOC</code>工作过程主要分两步，假设类别为<span class="math inline">\(c_1,c_2,..,c_K\)</span>：</p>
+<ul>
+<li><p>编码：<strong>对<span class="math inline">\(K\)</span>个类别进行<span class="math inline">\(M\)</span>次划分</strong>，每次划分都将一部分类别划分为正类，一部分类别划分为反类，从而形成一个二分类训练集。</p>
+<p>这样一个<strong>产生<span class="math inline">\(M\)</span>个训练集，可以训练出<span class="math inline">\(M\)</span>个分类器</strong>。</p></li>
+<li><p>解码：用<span class="math inline">\(M\)</span>个分类器分别对测试样本进行预测，这些预测标记组成一个编码。</p>
+<p>将这个预测编码与每个类别各自的编码进行比较，返回其中距离最小的类别作为最终预测结果。</p></li>
+</ul></li>
+</ol>
+<h2 id="六类别不平衡问题">六、类别不平衡问题</h2>
+<ol type="1">
+<li><p>通常在机器学习中都有一个基本假设：不同类别的训练样本数目相当。</p>
+<ul>
+<li><p>如果不同类别的训练样本数目稍有差别，通常影响不大。</p></li>
+<li><p>如果不同类别的训练样本数目差别很大（极端情况下，如正类样本只有十个，反类样本一百万个），则会对学习过程造成影响。这就是类别不平衡问题(<code>class-imbalance</code>)。</p>
+<p>这里讨论中，<strong>假设正类样本偏少、反类样本偏多</strong>。</p></li>
+</ul></li>
+<li><p>对于类别不平衡问题，常用的有三种方法：</p>
+<ul>
+<li>基于再缩放策略进行决策，称之为阈值移动<code>threshold-moving</code> 。</li>
+<li>直接对训练集里的<strong>反类样本进行欠采样</strong><code>undersampling</code>。</li>
+<li>直接对训练集里的<strong>正类样本进行过采样</strong><code>oversampling</code>。</li>
+</ul></li>
+<li><p>对于正负样本<strong>极不平衡</strong>的场景，可以完全换一个不同的角度来看问题：将它看作一分类<code>One Class Learning</code>或者异常检测<code>Novelty Detection</code>问题。</p>
+<p>此时可以用<code>One-class SVM</code>模型。</p></li>
+</ol>
+<h3 id="欠采样">6.1 欠采样</h3>
+<ol type="1">
+<li><p>欠采样会<strong>去除一些反类</strong>使得正、反类数目接近。</p></li>
+<li><p>欠采样若随机抛弃反类，则可能<strong>丢失一些重要信息</strong>。</p>
+<p>常用方法是将反类<strong>划分成若干个集合</strong>供不同学习器使用，这样对每个学习器来看都是欠采样，但是全局来看并不会丢失重要信息。</p></li>
+</ol>
+<h3 id="过采样">6.2 过采样</h3>
+<ol type="1">
+<li><p>过采样会增加一些正类使得正、反类数目接近。</p></li>
+<li><p>过采样<strong>不能简单</strong>的对原始正类进行重复采样，否则会导致严重的过拟合。</p>
+<p>通常在原始正类之间<strong>插值</strong>来生成额外的正类。</p></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/08/%E9%99%8D%E7%BB%B4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1857,7 +2332,7 @@ P\left( {w|y} \right) = \frac{ {P\left( {y|w} \right)P\left( w \right)}}{ {P\lef
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
