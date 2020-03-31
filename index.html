@@ -1157,12 +1157,8 @@ Cov(x,z) &amp;= Cov(z,x) = \mathbb{E}\left[ {\left( {x - \mu } \right){ {\left( 
 </ul></li>
 <li>软分类，产生不同类别的概率，这类算法根据获得后验概率方法的不同分为两种
 <ul>
-<li><p>生成式（先对联合概率分布<span class="math inline">\(P\left( {x,c} \right)\)</span> 建模，然后再由此获得<span class="math inline">\(P\left( {c|x} \right)\)</span>）：高斯判别分析（GDA）和朴素贝叶斯等为代表</p>
-<ul>
-<li><p>GDA</p></li>
-<li><p>Naive Bayes</p></li>
-</ul></li>
-<li><p>判别式（直接对条件概率<span class="math inline">\(P\left( {c|x} \right)\)</span> 进行建模来预测<span class="math inline">\(c\)</span> ）：Logistic 回归</p></li>
+<li><p>生成式（由数据学习联合概率分布<span class="math inline">\(P\left( {x,c} \right)\)</span> ，然后再由此获得条件概率分布 <span class="math inline">\(P\left( {c|x} \right)\)</span> 作为预测的模型）：高斯判别分析（GDA）、朴素贝叶斯（Naive Bayes）和隐马尔可夫模型。</p></li>
+<li><p>判别式（由数据直接学习决策函数<span class="math inline">\(f(x)\)</span> 或者条件概率分布 <span class="math inline">\(P\left( {c|x} \right)\)</span> 作为预测模型来预测 <span class="math inline">\(c\)</span> ）：Logistic 回归、感知机、k近邻、决策树、SVM、提升方法和条件随机场。</p></li>
 </ul></li>
 </ol>
 <h2 id="硬分类-感知机">硬分类-感知机</h2>
