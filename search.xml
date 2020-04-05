@@ -1,6 +1,190 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>kNN</title>
+    <url>/2020/04/05/kNN/</url>
+    <content><![CDATA[<h2 id="k-近邻算法">k 近邻算法</h2>
+<ol type="1">
+<li><span class="math inline">\(k\)</span> 近邻法（<code>k-Nearest Neighbor:kNN</code>）是一种基本的<strong>分类</strong>与<strong>回归</strong>方法。</li>
+</ol>
+<ul>
+<li>分类问题：对新的样本，根据其<span class="math inline">\(k\)</span>个最近邻的训练样本的类别，通过<strong>多数表决</strong>等方式进行预测。</li>
+<li>回归问题：对新的样本，根据其<span class="math inline">\(k\)</span>个最近邻的训练样本标签值的<strong>均值</strong>作为预测值。</li>
+</ul>
+<ol start="2" type="1">
+<li><span class="math inline">\(k\)</span> 近邻法不具有显式的学习过程，它是<strong>直接预测</strong>。它是“惰性学习”(<code>lazy learning</code>)的著名代表。</li>
+</ol>
+<ul>
+<li><p>它实际上利用训练数据集对<strong>特征向量空间进行划分</strong>，并且作为其分类的"模型"。</p></li>
+<li><p>这类学习技术在训练阶段仅仅将样本保存起来，训练时间开销为零，等到收到测试样本后再进行处理。</p>
+<p>那些在训练阶段就对样本进行学习处理的方法称作“急切学习”(<code>eager learning</code>)。</p></li>
+</ul>
+<ol start="3" type="1">
+<li><span class="math inline">\(k\)</span> 近邻法是个非参数学习算法，它没有任何参数（ <span class="math inline">\(k\)</span> 是超参数，而不是需要学习的参数）。</li>
+</ol>
+<ul>
+<li><span class="math inline">\(k\)</span> 近邻模型具有非常高的容量，这使得它在训练样本数量较大时能获得较高的精度。</li>
+<li>它的缺点有：
+<ul>
+<li><strong>计算成本</strong>很高。因为需要构建一个$N N <span class="math inline">\(的距离矩阵，其计算量为\)</span>O(N^2)<span class="math inline">\(，其中\)</span>N$为训练样本的数量。</li>
+<li>在<strong>训练集较小</strong>时，<strong>泛化能力很差</strong>，非常容易陷入过拟合。</li>
+<li><strong>无法判断特征的重要性</strong>。</li>
+</ul></li>
+</ul>
+<ol start="4" type="1">
+<li><span class="math inline">\(k\)</span> 近邻法的三要素：</li>
+</ol>
+<ul>
+<li><span class="math inline">\(k\)</span> 值选择。</li>
+<li>距离度量。</li>
+<li>决策规则。</li>
+</ul>
+<h3 id="k-值选择">k 值选择</h3>
+<ol type="1">
+<li><p>当<span class="math inline">\(k=1\)</span>时的 <span class="math inline">\(k\)</span>近邻算法称为最近邻算法，此时将训练集中与 <span class="math inline">\(\vec{\mathbf{x} }\)</span> <strong>最近的点的类别</strong>作为 <span class="math inline">\(\vec{\mathbf{x} }\)</span> 的分类。</p></li>
+<li><p><span class="math inline">\(k\)</span> 值的选择会对 <span class="math inline">\(k\)</span> 近邻法的结果产生重大影响。</p></li>
+</ol>
+<ul>
+<li><p>若 <span class="math inline">\(k\)</span> 值较小，则相当于用<strong>较小的邻域</strong>中的训练样本进行预测，"学习"的偏差减小。</p>
+<p>只有与输入样本较近的训练样本才会对预测起作用，预测结果会对近邻的样本点非常敏感。</p>
+<p>若近邻的训练样本点刚好是噪声，则预测会出错。即：<span class="math inline">\(k\)</span> 值的减小意味着模型整体变复杂，易发生过拟合。</p>
+<ul>
+<li>优点：减少"学习"的偏差。</li>
+<li>缺点：增大"学习"的方差（即<strong>波动较大</strong>）。</li>
+</ul></li>
+<li><p>若 <span class="math inline">\(k\)</span> 值较大，则相当于用<strong>较大的邻域</strong>中的训练样本进行预测。</p>
+<p>这时输入样本较远的训练样本也会对预测起作用，使预测偏离预期的结果。</p>
+<p>即： <span class="math inline">\(k\)</span> 值增大意味着模型整体变简单。</p>
+<ul>
+<li>优点：减少"学习"的方差（即<strong>波动较小</strong>）。</li>
+<li>缺点：增大"学习"的偏差。</li>
+</ul></li>
+</ul>
+<ol start="3" type="1">
+<li>应用中，<span class="math inline">\(k\)</span> 值一般取一个较小的数值。通常采用<strong>交叉验证法</strong>来选取<strong>最优</strong>的 <span class="math inline">\(k\)</span> 值。</li>
+</ol>
+<h3 id="距离度量">距离度量</h3>
+<ol type="1">
+<li><p>特征空间中两个样本点的距离是两个样本点的<strong>相似程度</strong>的反映。</p>
+<p><span class="math inline">\(k\)</span> 近邻模型的特征空间一般是 <span class="math inline">\(n\)</span> 维实数向量空间<span class="math inline">\(\mathbb{R^n}\)</span>， 其距离一般为欧氏距离，也可以是一般的 距离： <span class="math display">\[
+\begin{aligned}
+L_{p}\left(\overrightarrow{\mathbf{x} }_{i}, \overrightarrow{\mathbf{x} }_{j}\right) &amp;=\left(\sum_{l=1}^{n}\left|x_{i, l}-x_{j, l}\right|^{p}\right)^{1 / p}, \quad p \geq 1 \\
+\end{aligned}
+\]</span></p>
+<p><span class="math display">\[
+\overrightarrow{\mathbf{x} }_{i}, \overrightarrow{\mathbf{x} }_{j} \in \mathcal{X}=\mathbb{R}^{n} ; \quad \overrightarrow{\mathbf{x} }_{i}=\left(x_{i, 1}, x_{i, 2}, \cdots, x_{i, n}\right)^{T}
+\]</span></p>
+<ul>
+<li>当 <span class="math inline">\(p=2\)</span> 时，为<strong>欧氏距离</strong>。</li>
+<li>当 <span class="math inline">\(p=1\)</span> 时，为<strong>曼哈顿距离</strong>。</li>
+<li>当<span class="math inline">\(p=\infin\)</span>时，为各维度距离中的最大值：<span class="math inline">\(L_{\infty}\left(\overrightarrow{\mathbf{x} }_{i}, \overrightarrow{\mathbf{x} }_{j}\right)=\max _{l}\left|x_{i, l}-x_{j, l}\right|\)</span></li>
+</ul></li>
+<li><p>不同的距离度量所确定的最近邻点是不同的。</p></li>
+</ol>
+<h3 id="决策规则">决策规则</h3>
+<h4 id="分类决策规则">分类决策规则</h4>
+<ol type="1">
+<li>分类决策通常采用<strong>多数表决</strong>，也可以<strong>基于距离的远近进行加权投票</strong>：距离越近的样本权重越大。</li>
+<li>多数表决等价于经验风险最小化。</li>
+</ol>
+<h4 id="回归决策规则">回归决策规则</h4>
+<ol type="1">
+<li><p>回归决策通常采用<strong>均值回归</strong>，也可以基于距离的远近进行加权投票：距离越近的样本权重越大。</p></li>
+<li><p>均值回归等价于经验风险最小化。</p></li>
+</ol>
+<h3 id="k-近邻算法-1">k 近邻算法</h3>
+<ol type="1">
+<li><p><span class="math inline">\(k\)</span> 近邻法的<strong>分类</strong>算法：</p>
+<ul>
+<li><p>根据给定的距离度量，在<span class="math inline">\(\mathbb{D}\)</span>中寻找与 <span class="math inline">\(\vec{\mathbf{x} }\)</span> 最近邻的<span class="math inline">\(k\)</span>个点。定义涵盖这<span class="math inline">\(k\)</span>个点的<span class="math inline">\(\vec{\mathbf{x} }\)</span>的邻域记作<span class="math inline">\(\mathcal{N}_k(\vec{\mathbf{x} })\)</span>。</p></li>
+<li><p>从 <span class="math inline">\(\mathcal{N}_k(\vec{\mathbf{x} })\)</span> 中，根据<strong>分类决策规则</strong>（如多数表决） 决定 <span class="math inline">\(\vec{\mathbf{x} }\)</span> 的类别 <span class="math inline">\(y\)</span> ：</p>
+<p><span class="math inline">\(y=\arg \max _{c_{m} } \sum_{\overrightarrow{\mathbf{x} }_{i} \in \mathcal{N}_{k}(\vec{x})} I\left(\tilde{y}_{i}=c_{m}\right)\)</span></p></li>
+</ul></li>
+<li><p><span class="math inline">\(k\)</span> 近邻法的<strong>回归</strong>算法：</p>
+<ul>
+<li><p>根据给定的距离度量，在<span class="math inline">\(\mathbb{D}\)</span>中寻找与 <span class="math inline">\(\vec{\mathbf{x} }\)</span> 最近邻的<span class="math inline">\(k\)</span>个点。定义涵盖这<span class="math inline">\(k\)</span>个点的<span class="math inline">\(\vec{\mathbf{x} }\)</span>的邻域记作<span class="math inline">\(\mathcal{N}_k(\vec{\mathbf{x} })\)</span>。</p></li>
+<li><p>从 <span class="math inline">\(\mathcal{N}_k(\vec{\mathbf{x} })\)</span> 中，根据<strong>回归决策规则</strong>（如均值回归） 决定 <span class="math inline">\(\vec{\mathbf{x} }\)</span> 的输出 <span class="math inline">\(y\)</span> ：</p>
+<p><span class="math inline">\(y=\frac{1}{k} \sum_{\vec{x}_{i} \in \mathcal{N}_{k}(\vec{x})} \tilde{y}_{i}\)</span></p></li>
+</ul></li>
+</ol>
+<h2 id="kd树">kd树</h2>
+<ol type="1">
+<li><p>实现<span class="math inline">\(k\)</span>近邻法时，主要考虑的问题是：如何对训练数据进行<strong>快速</strong> <span class="math inline">\(k\)</span> 近邻搜索。</p></li>
+<li><p>最简单的实现方法：线性扫描。此时要计算输入样本与每个训练样本的距离。</p>
+<p>当训练集很大时，计算非常耗时。解决办法是：使用 <span class="math inline">\(kd\)</span> 树来提高 <span class="math inline">\(k\)</span> 近邻搜索的效率。</p></li>
+<li><p><span class="math inline">\(kd\)</span> 树是一种对<span class="math inline">\(k\)</span>维空间中的样本点进行<strong>存储</strong>以便对其进行<strong>快速检索</strong>的树型数据结构。</p></li>
+</ol>
+<p>它是<strong>二叉</strong>树，表示对<span class="math inline">\(k\)</span>维空间的一个划分。</p>
+<ol start="4" type="1">
+<li><p>构造 <span class="math inline">\(kd\)</span> 树的过程相当于不断的<strong>用垂直于坐标轴的超平面将 <span class="math inline">\(k\)</span> 维空间切分</strong>的过程。</p>
+<p><span class="math inline">\(kd\)</span> 树的<strong>每个结点对应于一个 <span class="math inline">\(k\)</span> 维超矩形区域</strong>。</p></li>
+</ol>
+<h3 id="kd树构建算法示例">kd树构建算法示例</h3>
+<ol type="1">
+<li><p>假设有 6 个二维数据点：<span class="math inline">\(\mathbb{D}=\{(2,3),(5,4),(9,6),(4,7),(8,1),(7,2)\}\)</span> 。</p>
+<p>构建<code>kd</code> 树的过程：</p>
+<ul>
+<li><p>首先从 <code>x</code> 轴开始划分，根据<code>x</code> 轴的取值<code>2,5,9,4,8,7</code> 得到<strong>中位数</strong>为 <code>7</code> ，因此切分线为: <span class="math inline">\(x= 7\)</span> 。</p>
+<blockquote>
+<p>也可以根据<code>x</code> 轴和<code>y</code> 轴上数据的方差，<strong>选择方差最大</strong>的那个轴作为第一轮划分轴。</p>
+</blockquote></li>
+<li><p>左子空间（记作<span class="math inline">\(\mathbb{D_1}\)</span> ）包含点 <code>(2,3),(5,4),(4,7)</code>，切分轴轮转，从<code>y</code> 轴开始划分，切分线为：<span class="math inline">\(y=4\)</span> 。</p></li>
+<li><p>右子空间（记作 <span class="math inline">\(\mathbb{D_2}\)</span>）包含点 <code>(9,6),(8,1)</code>，切分轴轮转，从<code>y</code> 轴开始划分，切分线为：<span class="math inline">\(y=6\)</span> 。</p></li>
+<li><p><span class="math inline">\(\mathbb{D_1}\)</span>的左子空间（记做 ）包含点<code>(2,3)</code>，切分轴轮转，从<code>x</code> 轴开始划分，切分线为：<span class="math inline">\(x=2\)</span>。</p>
+<p>其左子空间记作<span class="math inline">\(\mathbb{D_7}\)</span>，右子空间记做<span class="math inline">\(\mathbb{D_8}\)</span> 。由于<span class="math inline">\(\mathbb{D_7},\mathbb{D_8}\)</span>都不包含任何点，因此对它们不再继续拆分。</p></li>
+<li><p><span class="math inline">\(\mathbb{D_1}\)</span>的右子空间（记作<span class="math inline">\(\mathbb{D_4}\)</span>）包含点<code>(4,7)</code>，切分轴轮转，从<code>x</code> 轴开始划分，切分线为：<span class="math inline">\(x=4\)</span>。</p>
+<p>其左子空间记做<span class="math inline">\(\mathbb{D_9}\)</span>，右子空间记作<span class="math inline">\(\mathbb{D_{10} }\)</span>。由于<span class="math inline">\(\mathbb{D_9},\mathbb{D_{10} }\)</span>都不包含任何点，因此对它们不再继续拆分。</p></li>
+<li><p><span class="math inline">\(\mathbb{D_2}\)</span>的左子空间（记作<span class="math inline">\(\mathbb{D_5}\)</span>）包含点<code>(8,1)</code>，切分轴轮转，从<code>x</code> 轴开始划分，切分线为：<span class="math inline">\(x=8\)</span>。</p></li>
+</ul>
+<p>其左子空间记作<span class="math inline">\(\mathbb{D_{11} }\)</span> ，右子空间记作<span class="math inline">\(\mathbb{D_{12} }\)</span>。由于<span class="math inline">\(\mathbb{D_{11},D_{12} }\)</span>都不包含任何点，因此对它们不再继续拆分。</p>
+<ul>
+<li><span class="math inline">\(\mathbb{D_2}\)</span>的右子空间（记做<span class="math inline">\(\mathbb{D_6}\)</span>）不包含任何点，停止继续拆分。</li>
+</ul>
+<p>最终得到样本空间拆分图如下：</p>
+<p><img src="/2020/04/05/kNN/1.png"></p>
+<p>样本空间结构图如下：</p>
+<p><img src="/2020/04/05/kNN/2.png"></p>
+<p><code>kd</code> 树如下。</p>
+<ul>
+<li><code>kd</code> 树以树的形式，根据样本空间的拆分，重新组织了数据集的样本点。每个结点都存放着位于划分平面上数据点。</li>
+<li>由于<code>样本空间结构图</code> 中的叶区域不包含任何数据点，因此叶区域不会被划分。因此<code>kd</code> 树的高度要比<code>样本空间结构图</code> 的高度少一层。</li>
+<li>从<code>kd</code> 树中可以清晰的看到坐标轮转拆分。</li>
+</ul>
+<p><img src="/2020/04/05/kNN/3.png"></p></li>
+<li><p>假设需要查询的点是<strong><code>P=(2.1,3.1)</code></strong> 。</p>
+<ul>
+<li>首先从<code>kd</code> 树进行二叉查找，最终找到叶子节点<code>(2,3)</code>，查找路径为：<code>Queue=&lt;(7,2),(5,4),(2,3)&gt;</code> 。</li>
+<li><code>Queue</code> 弹出结点<code>(2,3)</code>：<code>P</code> 到 <code>(2,3)</code>的距离为<code>0.1414</code> ，该距离作为当前最近距离，<code>(2,3)</code> 作为候选最近邻点。`</li>
+<li><code>Queue</code> 弹出结点<code>(5,4)</code>：<code>P</code> 到 <code>(5,4)</code>的距离为<code>3.03</code> 。候选最近邻点仍然为<code>(2,3)</code>，当前最近距离<strong>仍然为<code>0.1414</code> </strong>。</li>
+<li>因为结点<code>(5,4)</code>为<strong>中间结点</strong>，考察<strong>以<code>P</code> 为圆心</strong>，以<code>0.1414</code> 为半径的圆是否与<code>y=4</code> <strong>相交</strong>。结果不相交，因此不用搜索<code>(5,4)</code> 的另一半子树。</li>
+<li><code>Queue</code> 弹出结点<code>(7,2)</code>：<code>P</code> 到 <code>(7,2)</code>的距离为<code>5.02</code> 。候选最近邻点仍然为<code>(2,3)</code>，当前最近距离仍然为<code>0.1414</code> 。</li>
+<li>因为结点<code>(7,2)</code>为中间结点，考察以<code>P</code> 为圆心，以<code>0.1414</code> 为半径的圆是否与<code>x=7</code> 相交。结果不相交，因此不用搜索<code>(7,2)</code>的另一半子树。</li>
+<li>现在<code>Queue</code> 为空，迭代结束。因此最近邻点为<code>(2,3)</code> ，最近距离为<code>0.1414</code> 。</li>
+</ul>
+<p><img src="/2020/04/05/kNN/4.png"></p></li>
+<li><p>假设需要查询的点是<strong><code>P=(2,4.5)</code></strong> 。</p>
+<ul>
+<li><p>首先从<code>kd</code> 树进行二叉查找，最终找到叶子节点<code>(4,7)</code>，查找路径为：<code>Queue=&lt;(7,2),(5,4),(4,7)&gt;</code> 。</p></li>
+<li><p><code>Queue</code> 弹出结点 <code>(4,7)</code> ：<code>P</code> 到 <code>(4,7)</code> 的距离为<code>3.202</code> ，该距离作为当前最近距离， <code>(4,7)</code> 作为候选最近邻点。</p></li>
+<li><p><code>Queue</code> 弹出结点 <code>(5,4)</code> ：<code>P</code> 到 <code>(5,4)</code> 的距离为<code>3.041</code> ，该距离作为当前最近距离， <code>(5,4)</code> 作为<strong>候选最近邻点</strong>。</p>
+<p>因为<code>(5,4)</code> 为中间结点，考察以<code>P</code> 为圆心，以<code>3.041</code> 为半径的圆是否与<code>y=4</code> 相交。</p>
+<p><strong>结果相交</strong>，因此二叉搜索<code>(5,4)</code> 的<strong>另一半子树</strong>，得到新的查找路径为：<code>Queue=&lt;(7,2),(2,3)&gt;</code> 。</p>
+<blockquote>
+<p>二叉查找时，理论上<code>P</code> 应该位于结点<code>(5,4)</code> 的右子树 。但是这里<strong>强制进入</strong><code>(5,4)</code> 的左子树，人为打破二叉查找规则。接下来继续维持二叉查找规则。</p>
+</blockquote></li>
+<li><p><code>Queue</code> 弹出结点 <code>(2,3)</code> ：<code>P</code> 到 <code>(2,3)</code> 的距离为<code>1.5</code> ，该距离作为当前最近距离， <code>(2,3)</code> 作为候选最近邻点。</p></li>
+<li><p><code>Queue</code> 弹出结点<code>(7,2)</code>：<code>P</code> 到 <code>(7,2)</code>的距离为<code>5.59</code> 。候选最近邻点仍然为<code>(2,3)</code>，当前最近距离仍然为<code>1.5</code> 。</p>
+<p>因为结点<code>(7,2)</code>为中间结点，考察以<code>P</code> 为圆心，以<code>1.5</code> 为半径的圆是否与<code>x=7</code> 相交。结果不相交，因此不用搜索<code>(7,2)</code>的另一半子树。</p></li>
+<li><p>现在<code>Queue</code> 为空，迭代结束。因此最近邻点为<code>(2,3)</code> ，最近距离为<code>1.5</code> 。</p>
+<p><img src="/2020/04/05/kNN/5.png"></p></li>
+</ul></li>
+</ol>
+]]></content>
+      <categories>
+        <category>Machine Learning</category>
+      </categories>
+  </entry>
+  <entry>
     <title>数据预处理</title>
     <url>/2020/03/31/%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86/</url>
     <content><![CDATA[<ol type="1">
